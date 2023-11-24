@@ -244,17 +244,17 @@ public class Shop {
 
         //Parse file
         List<List<String>> parsedCSV = CSVParser.parseCSV(csv);
+        AdminShop.LOGGER.debug("Reading "+parsedCSV.size()+" shop lines...");
         int line = 0;
         for(List<String> record : parsedCSV){
             line++;
             parseLine(record.toArray(new String[]{}), line, errors);
         }
-        ;
     }
 
     public void printErrors(CommandSource initiator){
-        AdminShop.LOGGER.debug("Errors size:"+errors.size()+", initiator:"+initiator);
         if(initiator instanceof LocalPlayer){
+            AdminShop.LOGGER.debug("Errors size:"+errors.size());
             if(errors.size() == 0) {
                 initiator.sendSystemMessage(Component.literal("Shop reloaded, syntax is correct!"));
             }
@@ -480,7 +480,8 @@ public class Shop {
             return;
         }
 
-        AdminShop.LOGGER.debug("Adding ShopItem: isBuy="+isBuy+", isItem="+isItem+", isTag="+isTag+", item:"+itemResource+", nbt:"+((nbtText != null) ? nbtText : "none"));
+//        AdminShop.LOGGER.debug("Adding ShopItem: isBuy="+isBuy+", isItem="+isItem+", isTag="+isTag+", item:"+
+//                itemResource+", nbt:"+((nbtText != null) ? nbtText : "none"));
         ShopItem shopItem = new ShopItem.Builder()
                 .setIsBuy(isBuy)
                 .setIsItem(isItem)

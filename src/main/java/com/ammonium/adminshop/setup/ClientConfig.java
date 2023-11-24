@@ -48,7 +48,7 @@ public class ClientConfig {
         return name;
     }
 
-    public static JsonObject loadClientData() {
+    private static JsonObject loadClientData() {
         assert Minecraft.getInstance().level != null && Minecraft.getInstance().level.isClientSide;
         File clientDataFile = new File(CLIENT_CONFIG_FOLDER, getServerName() + "_client.json");
         AdminShop.LOGGER.debug("Loading client data from "+clientDataFile);
@@ -65,7 +65,7 @@ public class ClientConfig {
         return readObject;
     }
 
-    public static void saveClientData(JsonObject data) {
+    private static void saveClientData(JsonObject data) {
         assert Minecraft.getInstance().level != null && Minecraft.getInstance().level.isClientSide;
         File clientDataFile = new File(CLIENT_CONFIG_FOLDER, getServerName() + "_client.json");
         AdminShop.LOGGER.debug("Saving client config data to "+clientDataFile);
