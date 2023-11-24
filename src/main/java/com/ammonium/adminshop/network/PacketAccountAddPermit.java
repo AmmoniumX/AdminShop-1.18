@@ -65,7 +65,7 @@ public class PacketAccountAddPermit {
             AdminShop.LOGGER.info("Adding permit tier "+permit+" to "+accOwner+":"+accID);
             ServerPlayer player = ctx.getSender();
             assert player != null;
-            MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+            MoneyManager moneyManager = MoneyManager.get(player.level());
             boolean success = moneyManager.addPermit(accOwner, accID, permit);
             if (!success) {
                 AdminShop.LOGGER.error("Error adding permit to account!");
@@ -83,7 +83,7 @@ public class PacketAccountAddPermit {
                 currentAccount.getMembers().forEach(memberUUID -> {
 
                     List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                    ServerPlayer serverPlayer = (ServerPlayer) player.getLevel()
+                    ServerPlayer serverPlayer = (ServerPlayer) player.level()
                             .getPlayerByUUID(UUID.fromString(memberUUID));
                     if (serverPlayer != null) {
                         serverPlayer.playNotifySound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 1.0f, 1.0f);

@@ -2,8 +2,8 @@ package com.ammonium.adminshop.client.events;
 
 import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.client.jei.PreparableReloadListener;
-import com.ammonium.adminshop.commands.AdminShopCommand;
-import com.ammonium.adminshop.commands.ShopAccountsCommand;
+import com.ammonium.adminshop.command.AdminShopCommand;
+import com.ammonium.adminshop.command.ShopAccountsCommand;
 import com.ammonium.adminshop.money.BankAccount;
 import com.ammonium.adminshop.money.MoneyManager;
 import com.ammonium.adminshop.network.PacketSyncMoneyToClient;
@@ -34,7 +34,7 @@ public class ServerEventListeners {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         AdminShop.LOGGER.debug("Calling SyncShop from onPlayerLogin");
         Messages.sendToPlayer(new PacketSyncShopToClient(Shop.get().shopTextRaw), player);
-        MoneyManager moneyManager = MoneyManager.get(event.getEntity().getLevel());
+        MoneyManager moneyManager = MoneyManager.get(event.getEntity().level());
         Map<String, List<BankAccount>> sharedAccounts = moneyManager.getSharedAccounts();
         List<BankAccount> usableAccounts;
         if (!sharedAccounts.containsKey(event.getEntity().getStringUUID())) {

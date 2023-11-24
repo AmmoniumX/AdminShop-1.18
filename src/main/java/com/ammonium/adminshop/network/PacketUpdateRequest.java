@@ -1,6 +1,5 @@
 package com.ammonium.adminshop.network;
 
-import com.ammonium.adminshop.blocks.ShopMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,6 +7,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
+
+import com.ammonium.adminshop.block.interfaces.ShopMachine;
 
 public class PacketUpdateRequest {
     private final BlockPos pos;
@@ -30,7 +31,7 @@ public class PacketUpdateRequest {
             // Change machine's account
             ServerPlayer player = ctx.getSender();
             if (player != null) {
-                BlockEntity be = player.level.getBlockEntity(pos);
+                BlockEntity be = player.level().getBlockEntity(pos);
                 if (be instanceof ShopMachine autoShopMachine) {
                     autoShopMachine.sendUpdates();
                 }

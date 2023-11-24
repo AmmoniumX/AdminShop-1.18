@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -72,14 +73,15 @@ public class TankGauge extends AbstractWidget {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     @Override
-    public void renderWidget(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         int x = getX();
         int y = getY();
+        PoseStack matrix = guiGraphics.pose();
         //super.renderButton(matrix, x, y, partialTicks);
         if(!visible) return;
         matrix.pushPose();
@@ -94,7 +96,7 @@ public class TankGauge extends AbstractWidget {
                     fluidTexture.atlasLocation());
             float pixelsPerMb = height / (float) tank.getCapacity();
             int filledHeight = (int) (pixelsPerMb * getQuantity());
-            blit(matrix, x, y+(height-filledHeight),0, width, filledHeight, fluidTexture);
+            guiGraphics.blit(x, y+(height-filledHeight),0, width, filledHeight, fluidTexture);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
 
@@ -105,8 +107,9 @@ public class TankGauge extends AbstractWidget {
         matrix.pushPose();
         matrix.translate(0, 0, 201);
         matrix.scale(.5f, .5f, 1);
-        Font font = Minecraft.getInstance().font;
-        drawString(matrix, font, getQuantity()+"", 2*(x+16)- font.width(getQuantity()+""), 2*(y)+92, 0xFFFFFF);
+        Minecraft mc = Minecraft.getInstance();
+        Font font = mc.font;
+        guiGraphics.drawString(font, getQuantity()+"", 2*(x+16)- font.width(getQuantity()+""), 2*(y)+92, 0xFFFFFF);
         matrix.popPose();
 
         matrix.popPose();

@@ -59,7 +59,7 @@ public class PacketAccountRemovePermit {
             AdminShop.LOGGER.info("Removing permit tier "+permit+" from "+accOwner+":"+accID);
             ServerPlayer player = ctx.getSender();
             assert player != null;
-            MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+            MoneyManager moneyManager = MoneyManager.get(player.level());
             boolean success = moneyManager.removePermit(accOwner, accID, permit);
             if (!success) {
                 AdminShop.LOGGER.error("Error removing permit from account!");
@@ -75,7 +75,7 @@ public class PacketAccountRemovePermit {
                 currentAccount.getMembers().forEach(memberUUID -> {
 
                     List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                    ServerPlayer serverPlayer = (ServerPlayer) player.getLevel()
+                    ServerPlayer serverPlayer = (ServerPlayer) player.level()
                             .getPlayerByUUID(UUID.fromString(memberUUID));
                     if (serverPlayer != null) {
                         serverPlayer.playNotifySound(SoundEvents.ZOMBIE_VILLAGER_CONVERTED, SoundSource.PLAYERS, 1.0f, 1.0f);

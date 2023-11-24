@@ -1,7 +1,7 @@
 package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.blocks.BuyerMachine;
+import com.ammonium.adminshop.block.interfaces.BuyerMachine;
 import com.ammonium.adminshop.shop.Shop;
 import com.ammonium.adminshop.shop.ShopItem;
 import net.minecraft.core.BlockPos;
@@ -44,7 +44,7 @@ public class PacketSetBuyerTarget {
             if (player != null) {
                 System.out.println("Setting buyer target for "+this.pos+" to "+this.targetItem.toString());
                 // Get IBuyerBE
-                Level level = player.level;
+                Level level = player.level();
                 BlockEntity blockEntity = level.getBlockEntity(this.pos);
                 if (!(blockEntity instanceof BuyerMachine buyerEntity)) {
                     AdminShop.LOGGER.error("BlockEntity at pos is not BuyerMachine");

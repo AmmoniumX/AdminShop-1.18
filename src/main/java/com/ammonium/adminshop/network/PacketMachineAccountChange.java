@@ -1,7 +1,7 @@
 package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.blocks.ShopMachine;
+import com.ammonium.adminshop.block.interfaces.ShopMachine;
 import com.ammonium.adminshop.money.BankAccount;
 import com.ammonium.adminshop.money.MoneyManager;
 import net.minecraft.core.BlockPos;
@@ -53,7 +53,7 @@ public class PacketMachineAccountChange {
             if (player != null) {
                 System.out.println("Changing machine account for "+this.pos+" to "+this.accOwner+":"+this.accID);
                 // Get SellerBE
-                Level level = player.level;
+                Level level = player.level();
                 BlockEntity blockEntity = level.getBlockEntity(this.pos);
                 if (!(blockEntity instanceof ShopMachine machineEntity)) {
                     AdminShop.LOGGER.error("BlockEntity at pos is not ShopMachine");
@@ -65,7 +65,7 @@ public class PacketMachineAccountChange {
                     return;
                 }
                 // Check if chosen new account is in player's usable accounts
-                MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+                MoneyManager moneyManager = MoneyManager.get(player.level());
                 List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(player.getStringUUID());
                 boolean hasAccess = usableAccounts.stream().anyMatch(account ->
                         (account.getOwner().equals(this.accOwner) && account.getId() == this.accID));

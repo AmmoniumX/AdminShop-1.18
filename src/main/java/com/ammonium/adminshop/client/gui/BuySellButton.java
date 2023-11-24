@@ -2,13 +2,13 @@ package com.ammonium.adminshop.client.gui;
 
 import com.ammonium.adminshop.AdminShop;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * To swap between Buy and Sell modes
@@ -33,28 +33,30 @@ public class BuySellButton extends Button {
      * Switches buy and sell mode
      * @return Whether in Buy mode. false = sell mode
      */
-    public boolean switchBuySell(){
+    public boolean switchBuySell() {
         isBuy = !isBuy;
         return isBuy;
     }
 
     @Override
-    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if(!visible) {
             return;
         }
         int x = getX();
         int y = getY();
-
         RenderSystem.setShaderTexture(0, GUI);
-        if(isBuy){
-            blit(matrix, x, y,195, 68, 50, 12);
-        }else{
-            blit(matrix, x, y, 195, 56, 50, 12);
+        if (isBuy) {
+            guiGraphics.blit(GUI, x, y, 195, 68, 50, 12);
+        } else {
+            guiGraphics.blit(GUI, x, y, 195, 56, 50, 12);
         }
-        drawCenteredString(matrix, Minecraft.getInstance().font, I18n.get(GUI_BUY), x+12,
-                y+6-Minecraft.getInstance().font.lineHeight/2, 0xFFFFFF);
-        drawCenteredString(matrix, Minecraft.getInstance().font, I18n.get(GUI_SELL), x+37,
-                y+6-Minecraft.getInstance().font.lineHeight/2, 0xFFFFFF);
+
+        Minecraft mc = Minecraft.getInstance();
+        Font font = mc.font;
+        guiGraphics.drawCenteredString(font, I18n.get(GUI_BUY), x + 12,
+                y + 6 - font.lineHeight/2, 0xFFFFFF);
+        guiGraphics.drawCenteredString(font, I18n.get(GUI_SELL), x + 37,
+                y + 6 - font.lineHeight/2, 0xFFFFFF);
     }
 }

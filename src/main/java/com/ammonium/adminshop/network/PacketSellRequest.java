@@ -196,7 +196,7 @@ public class PacketSellRequest {
                     AdminShop.LOGGER.debug("Fluid tag: "+shopItem.getFluidTag().location());
                 }
 
-                MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+                MoneyManager moneyManager = MoneyManager.get(player.level());
                 // Check if account has permit requirement
                 BankAccount bankAccount = moneyManager.getBankAccount(this.accOwner, this.accID);
                 if (!bankAccount.hasPermit(shopItem.getPermitTier())) {
@@ -228,7 +228,7 @@ public class PacketSellRequest {
                 assert currentAccount.getMembers().contains(this.accOwner);
                 currentAccount.getMembers().forEach(memberUUID -> {
                     List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                    Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.getLevel()
+                    Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.level()
                             .getPlayerByUUID(UUID.fromString(memberUUID)));
                 });
             });
@@ -267,7 +267,7 @@ public class PacketSellRequest {
                 return;
             }
 
-            boolean success = MoneyManager.get(player.getLevel()).addBalance(accOwner, accID, price);
+            boolean success = MoneyManager.get(player.level()).addBalance(accOwner, accID, price);
             if (success) {
                 AdminShop.LOGGER.debug("Sold item.");
             } else {
@@ -318,7 +318,7 @@ public class PacketSellRequest {
                 AdminShop.LOGGER.error("No matching item found.");
                 return;
             }
-            boolean success = MoneyManager.get(player.getLevel()).addBalance(accOwner, accID, price);
+            boolean success = MoneyManager.get(player.level()).addBalance(accOwner, accID, price);
             if (success) {
                 AdminShop.LOGGER.debug("Sold item.");
             } else {
@@ -376,7 +376,7 @@ public class PacketSellRequest {
                     }
                 }
 
-                boolean success = MoneyManager.get(player.getLevel()).addBalance(accOwner, accID, price);
+                boolean success = MoneyManager.get(player.level()).addBalance(accOwner, accID, price);
                 if (success) {
                     AdminShop.LOGGER.debug("Sold fluid.");
                 } else {
@@ -475,7 +475,7 @@ public class PacketSellRequest {
                     }
                 }
 
-                boolean success = MoneyManager.get(player.getLevel()).addBalance(accOwner, accID, price);
+                boolean success = MoneyManager.get(player.level()).addBalance(accOwner, accID, price);
                 if (success) {
                     AdminShop.LOGGER.debug("Sold fluid.");
                 } else {

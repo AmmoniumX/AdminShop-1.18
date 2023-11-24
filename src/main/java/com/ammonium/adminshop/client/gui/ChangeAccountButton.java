@@ -5,10 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public class ChangeAccountButton extends Button {
     private final ResourceLocation GUI = new ResourceLocation(AdminShop.MODID, "textures/gui/shop_gui.png");
@@ -19,7 +19,7 @@ public class ChangeAccountButton extends Button {
     }
 
     @Override
-    public void render(@NotNull PoseStack matrix, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         if(!visible) {
             return;
         }
@@ -27,16 +27,17 @@ public class ChangeAccountButton extends Button {
         int y = getY();
 
         RenderSystem.setShaderTexture(0, GUI);
-        blit(matrix, x, y, 195, 113, 50, 16);
+        guiGraphics.blit(GUI, x, y, 195, 113, 50, 16);
 
-        drawSmallerCenteredString(matrix, Minecraft.getInstance().font, name, x+25,
-                y+10-Minecraft.getInstance().font.lineHeight/2, 0xFFFFFF);
-
+        Minecraft mc = Minecraft.getInstance();
+        Font font = mc.font;
+        drawSmallerCenteredString(guiGraphics, font, name, x + 25,
+                y + 10 - font.lineHeight/2, 0xFFFFFF);
     }
 
-    public void drawSmallerCenteredString(PoseStack matrix, Font font, String text, int x, int y, int color) {
+    public void drawSmallerCenteredString(GuiGraphics guiGraphics, Font font, String text, int x, int y, int color) {
         float scale = 0.62f; // Adjust this value to set the desired font size
-
+        PoseStack matrix = guiGraphics.pose();
         matrix.pushPose(); // Save the current pose
 
         // Apply the scaling
@@ -47,7 +48,7 @@ public class ChangeAccountButton extends Button {
         int scaledY = (int) (y / scale);
 
         // Draw the centered string with the new positions
-        font.draw(matrix, text, (float) (scaledX - font.width(text) / 2), (float) scaledY, color);
+        guiGraphics.drawString(font, text, (float) (scaledX - font.width(text) / 2), (float) scaledY, color, active);
 
         matrix.popPose(); // Restore the saved pose
     }

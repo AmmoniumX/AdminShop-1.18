@@ -1,8 +1,8 @@
 package com.ammonium.adminshop.client.jei;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.blocks.ModBlocks;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.ammonium.adminshop.setup.Registration;
+
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -13,6 +13,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +28,7 @@ public class ShopBuyCategory implements IRecipeCategory<ShopBuyWrapper>{
 
     public ShopBuyCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(GUI, 0, 0, 110, 100);
-        this.icon = guiHelper.createDrawableItemStack(ModBlocks.BUYER_1.get().asItem().getDefaultInstance());
+        this.icon = guiHelper.createDrawableItemStack(Registration.BUYER_1.get().asItem().getDefaultInstance());
     }
 
     @Override
@@ -50,8 +52,8 @@ public class ShopBuyCategory implements IRecipeCategory<ShopBuyWrapper>{
     }
 
     @Override
-    public void draw(ShopBuyWrapper recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-        IRecipeCategory.super.draw(recipe, recipeSlotsView, stack, mouseX, mouseY);
+    public void draw(ShopBuyWrapper recipe, IRecipeSlotsView recipeSlotsView,  GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        IRecipeCategory.super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY);
         int priceX = 8;
         int priceY = 60;
         int tierX = 8;
@@ -59,11 +61,13 @@ public class ShopBuyCategory implements IRecipeCategory<ShopBuyWrapper>{
 
         // Draw the price
         String priceText = "Buy Price: "+recipe.getPrice();
-        Minecraft.getInstance().font.draw(stack, priceText, priceX, priceY, 0xFF555555);
+        Minecraft mc = Minecraft.getInstance();
+        Font font = mc.font;
+        guiGraphics.drawString(font, priceText, priceX, priceY, 0xFF555555);
 
         // Draw the required tier
         String tierText = "Requires Tier: "+((recipe.getRequiresTier() == 0) ? "None" : recipe.getRequiresTier());
-        Minecraft.getInstance().font.draw(stack, tierText, tierX, tierY, 0xFF555555);
+        guiGraphics.drawString(font, tierText, tierX, tierY, 0xFF555555);
     }
 
     @Override

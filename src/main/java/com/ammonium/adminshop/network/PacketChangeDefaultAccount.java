@@ -45,7 +45,7 @@ public class PacketChangeDefaultAccount {
             if (player != null) {
                 AdminShop.LOGGER.info("Setting default account for "+this.player+" to "+this.accOwner+":"+this.accID);
                 // Check if chosen new account is in player's usable accounts
-                MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+                MoneyManager moneyManager = MoneyManager.get(player.level());
                 List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(player.getStringUUID());
                 boolean hasAccess = usableAccounts.stream().anyMatch(account ->
                         (account.getOwner().equals(this.accOwner) && account.getId() == this.accID));

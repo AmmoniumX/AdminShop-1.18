@@ -93,7 +93,7 @@ public class PacketBuyRequest {
 
             ServerPlayer player = ctx.getSender();
             assert player != null;
-            MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+            MoneyManager moneyManager = MoneyManager.get(player.level());
 
             // Check if account has permit requirement
             BankAccount bankAccount = moneyManager.getBankAccount(this.accOwner, this.accID);
@@ -119,7 +119,7 @@ public class PacketBuyRequest {
             assert currentAccount.getMembers().contains(this.accOwner);
             currentAccount.getMembers().forEach(memberUUID -> {
                 List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.getLevel()
+                Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.level()
                         .getPlayerByUUID(UUID.fromString(memberUUID)));
             });
         });
@@ -148,7 +148,7 @@ public class PacketBuyRequest {
             long itemCost = item.getPrice();
             long price = (long) ceil((quantity - returned.getCount()) * itemCost);
 
-            MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+            MoneyManager moneyManager = MoneyManager.get(player.level());
             boolean success = moneyManager.subtractBalance(accOwner, accID, price);
             if (success) {
                 ItemHandlerHelper.insertItemStacked(iItemHandler, toInsert, false);
@@ -200,7 +200,7 @@ public class PacketBuyRequest {
             long price = (long) ceil(filledAmount.get() * fluidCost);
 
 
-            MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+            MoneyManager moneyManager = MoneyManager.get(player.level());
             boolean success = moneyManager.subtractBalance(accOwner, accID, price);
             if (success) {
                 newContainer.get().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> {
