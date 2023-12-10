@@ -22,7 +22,6 @@ public class MoneyFormat {
 
     private MoneyFormat() {
 //        decimalFormat.setRoundingMode(RoundingMode.DOWN);
-//        decimalFormat.getNumberInstance(Locale.US);
     }
 
     // Format value based on config
