@@ -10,8 +10,9 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class MoneyFormat extends DecimalFormat {
+public class MoneyFormat {
     public static final double FORMAT_START = 1000000;
+//    private final DecimalFormat decimalFormat = new DecimalFormat("#,###");
 
     public enum FormatType {
         FULL,
@@ -20,8 +21,8 @@ public class MoneyFormat extends DecimalFormat {
     }
 
     private MoneyFormat() {
-        super("#,###");
-        setRoundingMode(RoundingMode.DOWN);
+//        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+//        decimalFormat.getNumberInstance(Locale.US);
     }
 
     // Format value based on config
