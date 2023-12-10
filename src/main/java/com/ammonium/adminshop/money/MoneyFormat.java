@@ -26,7 +26,8 @@ public class MoneyFormat extends DecimalFormat {
 
     // Format value based on config
     public static String cfgformat(long value) {
-        FormatType formattype = Config.displayFormat.get() ? FormatType.SHORT : FormatType.FULL;
+        boolean displayFormat = (Config.displayFormat.get() != null) ? Config.displayFormat.get() : true;
+        FormatType formattype = displayFormat ? FormatType.SHORT : FormatType.FULL;
         return format(value, formattype, FormatType.RAW);
 //        return format(value, FormatType.SHORT);
     }
@@ -43,7 +44,7 @@ public class MoneyFormat extends DecimalFormat {
 
     public static String format(long value, FormatType noShift, FormatType onShift) {
         NumberName name = NumberName.findName(value);
-        if(name == null | Math.abs(value) < FORMAT_START) return NumberFormat.getNumberInstance(Locale.US).format(value);
+        if(name == null || Math.abs(value) < FORMAT_START) return NumberFormat.getNumberInstance(Locale.US).format(value);
         return Screen.hasShiftDown() ? doFormat(value, name, onShift) : doFormat(value, name, noShift);
     }
 
