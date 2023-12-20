@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,11 +18,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class BalanceDetector extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    private static final VoxelShape RENDER_SHAPE = Shapes.box(0, 0, 0, 1, 0.125, 1);
     public BalanceDetector() {
         super(Properties.of(ModBlocks.machineBlock)
                 .sound(SoundType.METAL)
@@ -30,6 +35,16 @@ public class BalanceDetector extends BaseEntityBlock {
                 .dynamicShape()
                 .noOcclusion()
         );
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return RENDER_SHAPE;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState pState) {
+        return RenderShape.MODEL;
     }
 
     @Nullable
@@ -49,9 +64,10 @@ public class BalanceDetector extends BaseEntityBlock {
         boolean lit = pState.getValue(LIT);
         BlockState toggled = pState.setValue(LIT, !lit);
         pLevel.setBlock(pPos, toggled, 3);
-        pLevel.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS,
+        pLevel.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS,
                 1.0f, 1.0f, false);
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        pLevel.sendBlockUpdated(pPos, pState, toggled, 3);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
