@@ -15,6 +15,7 @@ public class ModItems {
     public static final RegistryObject<Item> PERMIT = ITEMS.register("permit",
             () -> new LoreItem(new Item.Properties().tab(ModSetup.ITEM_GROUP), "Shift-click inside a shop to unlock new trades"));
 
+    public static final RegistryObject<Item> TABLET = ITEMS.register("tablet", ShopTablet::new);
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
