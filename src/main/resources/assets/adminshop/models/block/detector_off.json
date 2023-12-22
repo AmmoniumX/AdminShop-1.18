@@ -2,7 +2,7 @@
 	"parent": "minecraft:block/template_torch",
 	"render_type": "cutout",
 	"textures": {
-		"torch": "adminshop:block/detector"
+		"torch": "adminshop:block/detector_off"
 	},
 	"display": {
 		"thirdperson_righthand": {

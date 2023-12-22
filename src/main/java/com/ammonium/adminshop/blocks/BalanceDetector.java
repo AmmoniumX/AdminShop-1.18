@@ -2,6 +2,7 @@ package com.ammonium.adminshop.blocks;
 
 import com.ammonium.adminshop.blocks.entity.BalanceDetectorBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class BalanceDetector extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape RENDER_SHAPE = Shapes.box(0, 0, 0, 1, 0.125, 1);
+    private static final VoxelShape RENDER_SHAPE = Shapes.box(0.375, 0, 0.375, 0.625, 0.625, 0.625);
     public BalanceDetector() {
         super(Properties.of(ModBlocks.machineBlock)
                 .sound(SoundType.METAL)
@@ -34,7 +35,23 @@ public class BalanceDetector extends BaseEntityBlock {
                 .lightLevel(state -> 0)
                 .dynamicShape()
                 .noOcclusion()
+                .noCollission()
         );
+    }
+
+    @Override
+    public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
+        return state.getValue(LIT) ? 15 : 0;
+    }
+
+    @Override
+    public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
+        return state.getValue(LIT) ? 15 : 0;
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState state) {
+        return true;
     }
 
     @Override

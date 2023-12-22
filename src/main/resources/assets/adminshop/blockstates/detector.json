@@ -1,34 +1,10 @@
 {
   "variants": {
-    "facing=east,lit=false": {
-      "model": "adminshop:block/detector",
-      "y": 270
+    "lit=false": {
+      "model": "adminshop:block/detector_off"
     },
-    "facing=east,lit=true": {
-      "model": "adminshop:block/detector_on",
-      "y": 270
-    },
-    "facing=north,lit=false": {
-      "model": "adminshop:block/detector",
-      "y": 180
-    },
-    "facing=north,lit=true": {
-      "model": "adminshop:block/detector_on",
-      "y": 180
-    },
-    "facing=south,lit=false": {
+    "lit=true": {
       "model": "adminshop:block/detector"
-    },
-    "facing=south,lit=true": {
-      "model": "adminshop:block/detector_on"
-    },
-    "facing=west,lit=false": {
-      "model": "adminshop:block/detector",
-      "y": 90
-    },
-    "facing=west,lit=true": {
-      "model": "adminshop:block/detector_on",
-      "y": 90
     }
   }
 }
