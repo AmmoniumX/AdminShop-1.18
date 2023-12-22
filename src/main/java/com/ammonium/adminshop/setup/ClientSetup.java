@@ -33,7 +33,7 @@ public class ClientSetup {
             MenuScreens.<FluidSellerMenu, FluidSellerScreen>register(ModMenuTypes.FLUID_SELLER_MENU.get(), (FluidSellerMenu menu,
             Inventory playerInventory, Component title) -> new FluidSellerScreen(menu, playerInventory, title,
                     menu.getBlockEntity().getBlockPos()));
-//            ItemBlockRenderTypes.setRenderLayer(ModBlocks.SHOP.get(), RenderType.translucent());
+            MenuScreens.<DetectorMenu, DetectorScreen>register(ModMenuTypes.DETECTOR_MENU.get(), DetectorScreen::new);
             KeyInit.init();
         });
     }

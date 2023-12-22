@@ -77,8 +77,9 @@ public class PacketMachineAccountChange {
 
                 // Apply changes to machineEntity
                 machineEntity.setAccount(Pair.of(this.accOwner, this.accID));
-                blockEntity.setChanged();
-                machineEntity.sendUpdates();
+                // Handled inside setAccount() now
+//                blockEntity.setChanged();
+//                machineEntity.sendUpdates();
             }
         });
         return true;

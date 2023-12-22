@@ -118,8 +118,6 @@ public class BuyerBlock extends BaseEntityBlock {
                 Pair<String, Integer> defaultAccount = moneyManager.getDefaultAccount(serverPlayer.getStringUUID());
                 buyerEntity.setOwnerUUID(serverPlayer.getStringUUID());
                 buyerEntity.setAccount(defaultAccount);
-                buyerEntity.setChanged();
-                buyerEntity.sendUpdates();
             }
         }
     }

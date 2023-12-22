@@ -43,7 +43,7 @@ public class ModBlocks {
             FluidSellerBlock::new, ModSetup.ITEM_GROUP, "Automatically sells up to 64000mb/second");
 
     public static final RegistryObject<Block> DETECTOR = registerLoreBlock("detector",
-            BalanceDetector::new, ModSetup.ITEM_GROUP, "Outputs redstone signal depending on acount balance");
+            BasicDetector::new, ModSetup.ITEM_GROUP, "Outputs full redstone signal if greater than threshold");
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, CreativeModeTab tab) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
