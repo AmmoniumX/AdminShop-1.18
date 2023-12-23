@@ -4,7 +4,7 @@ import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.blocks.BasicDetector;
 import com.ammonium.adminshop.blocks.Detector;
 import com.ammonium.adminshop.money.MoneyManager;
-import com.ammonium.adminshop.screen.BasicDetectorMenu;
+import com.ammonium.adminshop.screen.AdvancedDetectorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -25,13 +25,34 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class BasicDetectorBE extends BlockEntity implements Detector {
+public class AdvancedDetectorBE extends BlockEntity implements Detector {
     private int tickCounter = 0;
     private String ownerUUID;
     private Pair<String, Integer> account;
     private long threshold = 0;
-    public BasicDetectorBE(BlockPos pPos, BlockState pBlockState) {
-        super(ModBlockEntities.BASIC_DETECTOR.get(), pPos, pBlockState);
+    private int signal = 0;
+
+    public void setSignal(int nsignal, BlockState state, Level level, BlockPos pos) {
+        if (this.signal == nsignal) return;
+        AdminShop.LOGGER.debug("Updating detector signal to "+nsignal);
+        this.signal = nsignal;
+        boolean newVal = signal > 0;
+        BlockState currState = getBlockState();
+        if (state.getValue(BasicDetector.LIT) != newVal && currState.getValue(BasicDetector.LIT) != newVal) {
+            AdminShop.LOGGER.debug("Updating detector LIT value to "+newVal);
+            level.setBlock(pos, state.setValue(BasicDetector.LIT, newVal), 3);
+        }
+        this.setChanged();
+        this.sendUpdates();
+        level.updateNeighborsAt(pos, getBlockState().getBlock());
+    }
+
+    public int getSignal() {
+        return signal;
+    }
+
+    public AdvancedDetectorBE(BlockPos pPos, BlockState pBlockState) {
+        super(ModBlockEntities.ADVANCED_DETECTOR.get(), pPos, pBlockState);
     }
 
     public void setOwnerUUID(String ownerUUID) {
@@ -64,7 +85,7 @@ public class BasicDetectorBE extends BlockEntity implements Detector {
         return threshold;
     }
 
-    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, BasicDetectorBE pBlockEntity) {
+    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, AdvancedDetectorBE pBlockEntity) {
         if(!pLevel.isClientSide) {
             pBlockEntity.tickCounter++;
             if (pBlockEntity.tickCounter > 20) {
@@ -74,16 +95,18 @@ public class BasicDetectorBE extends BlockEntity implements Detector {
                 // Get account balance
                 MoneyManager moneyManager = MoneyManager.get(sLevel);
                 long balance = moneyManager.getBalance(pBlockEntity.account.getKey(), pBlockEntity.account.getValue());
-                // Get redstone level based on threshold
+                // Get redstone level based on threshold, range from 0 to 15
                 long threshold = pBlockEntity.getThreshold();
-                BlockState currentState = pLevel.getBlockState(pPos);
-                boolean newVal = balance > threshold;
-                if (pState.getValue(BasicDetector.LIT) != newVal && currentState.getValue(BasicDetector.LIT) != newVal) {
-                    AdminShop.LOGGER.debug("Updating detector level to "+newVal);
-                    pLevel.setBlock(pPos, pState.setValue(BasicDetector.LIT, newVal), 3);
-                    pBlockEntity.setChanged();
-                    pBlockEntity.sendUpdates();
-                }
+                int calculatedSignal = (int) Math.min(Math.floor((balance/(double) threshold)*15), 15);
+                pBlockEntity.setSignal(calculatedSignal, pState, pLevel, pPos);
+//                BlockState currentState = pLevel.getBlockState(pPos);
+//                boolean newVal = balance > threshold;
+//                if (pState.getValue(BasicDetector.LIT) != newVal && currentState.getValue(BasicDetector.LIT) != newVal) {
+//                    AdminShop.LOGGER.debug("Updating detector level to "+newVal);
+//                    pLevel.setBlock(pPos, pState.setValue(BasicDetector.LIT, newVal), 3);
+//                    pBlockEntity.setChanged();
+//                    pBlockEntity.sendUpdates();
+//                }
 
             }
         }
@@ -171,12 +194,12 @@ public class BasicDetectorBE extends BlockEntity implements Detector {
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("screen.adminshop.detector");
+        return Component.translatable("screen.adminshop.adv_detector");
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory, Player pPlayer) {
-        return new BasicDetectorMenu(pContainerId, pInventory, this);
+        return new AdvancedDetectorMenu(pContainerId, pInventory, this);
     }
 }

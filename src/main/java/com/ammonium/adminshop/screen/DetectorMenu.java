@@ -1,11 +1,12 @@
 package com.ammonium.adminshop.screen;
 
-import com.ammonium.adminshop.blocks.entity.BasicDetectorBE;
-import net.minecraft.core.BlockPos;
+import com.ammonium.adminshop.AdminShop;
+import com.ammonium.adminshop.blocks.Detector;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,24 +15,45 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
-public class DetectorMenu extends AbstractContainerMenu {
+public abstract class DetectorMenu<Q extends Detector> extends AbstractContainerMenu {
 
     private final Player playerEntity;
     private final IItemHandler playerInventory;
-    private final BasicDetectorBE basicDetectorBE;
+    private final Q detectorBE;
     private final Level level;
 
-    public DetectorMenu(int windowId, Inventory inv, FriendlyByteBuf extraData){
-        this(windowId, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()));
-    }
-    public DetectorMenu(int id, Inventory playerInventory, Level pLevel, BlockPos pPos) {
-        this(id, playerInventory, pLevel.getBlockEntity(pPos));
-    }
 
-    public DetectorMenu(int windowId, Inventory inv, BlockEntity entity) {
-        super(ModMenuTypes.DETECTOR_MENU.get(), windowId);
+//    public DetectorMenu(int windowId, Inventory inv, FriendlyByteBuf extraData, Class<Q> pClass){
+//        this(windowId, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), pClass);
+//    }
+//    public DetectorMenu(int id, Inventory playerInventory, Level pLevel, BlockPos pPos, Class<Q> pClass) {
+//        this(id, playerInventory, pLevel.getBlockEntity(pPos), pClass);
+//    }
+//
+//    public DetectorMenu(int windowId, Inventory inv, BlockEntity entity, Class<Q> pClass) {
+//        super(ModMenuTypes.DETECTOR_MENU.get(), windowId);
 //        AdminShop.LOGGER.debug("Creating DetectorMenu");
-        this.basicDetectorBE = ((BasicDetectorBE) entity);
+//        if (!pClass.isInstance(entity)) {
+//            throw new IllegalArgumentException("Invalid detector block entity type");
+//        }
+//        this.detectorBE = pClass.cast(entity);
+//        this.playerEntity = inv.player;
+//        this.level = inv.player.level;
+//
+//        this.playerInventory = new InvWrapper(inv);
+//        layoutPlayerInventorySlots(10, 70);
+//    }
+    // For Super classes
+    public DetectorMenu(int windowId, Inventory inv, FriendlyByteBuf extraData, MenuType<?> menuType, Class<Q> pClass){
+        this(windowId, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), menuType, pClass);
+    }
+    public DetectorMenu(int windowId, Inventory inv, BlockEntity entity, MenuType<?> menuType, Class<Q> pClass) {
+        super(menuType, windowId);
+        AdminShop.LOGGER.debug("Creating DetectorMenu super");
+        if (!pClass.isInstance(entity)) {
+            throw new IllegalArgumentException("Invalid detector block entity type");
+        }
+        this.detectorBE = pClass.cast(entity);
         this.playerEntity = inv.player;
         this.level = inv.player.level;
 
@@ -39,8 +61,8 @@ public class DetectorMenu extends AbstractContainerMenu {
         layoutPlayerInventorySlots(10, 70);
     }
 
-    public BasicDetectorBE getBlockEntity() {
-        return basicDetectorBE;
+    public Q getBlockEntity() {
+        return detectorBE;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.ammonium.adminshop.screen;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.blocks.entity.BasicDetectorBE;
+import com.ammonium.adminshop.blocks.Detector;
 import com.ammonium.adminshop.client.gui.ChangeAccountButton;
 import com.ammonium.adminshop.client.gui.TextConfirmButton;
 import com.ammonium.adminshop.money.BankAccount;
@@ -29,11 +29,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
-    private static final ResourceLocation TEXTURE =
-            new ResourceLocation(AdminShop.MODID, "textures/gui/detector.png");
+public abstract class DetectorScreen<T extends DetectorMenu, Q extends Detector> extends AbstractContainerScreen<T> {
+    private final Class<Q> detectorClass;
     private final BlockPos blockPos;
-    private BasicDetectorBE basicDetectorBE;
+    private Q detectorBE;
     private String ownerUUID;
     private Pair<String, Integer> account;
     private long threshold;
@@ -45,17 +44,23 @@ public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
     // -1 if bankAccount is not in usableAccounts
     private int usableAccountsIndex;
 
-    public DetectorScreen(DetectorMenu pMenu, Inventory pPlayerInventory, Component pTitle, BlockPos blockPos) {
+    public DetectorScreen(T pMenu, Inventory pPlayerInventory, Component pTitle, BlockPos blockPos, Class<Q> pClass) {
         super(pMenu, pPlayerInventory, pTitle);
 //        AdminShop.LOGGER.debug("Initializing DetectorScreen");
         this.blockPos = blockPos;
-        this.basicDetectorBE = pMenu.getBlockEntity();
-        this.threshold = this.basicDetectorBE.getThreshold();
+        this.detectorClass = pClass;
+        if (!pClass.isInstance(pMenu.getBlockEntity())) {
+            throw new IllegalArgumentException("Invalid detector block entity type");
+        }
+        this.detectorBE = pClass.cast(pMenu.getBlockEntity());
+        this.threshold = this.detectorBE.getThreshold();
         this.inventoryLabelY = 60;
     }
 
-    public DetectorScreen(DetectorMenu pMenu, Inventory inventory, Component pTitle) {
-        this(pMenu, inventory, pTitle, pMenu.getBlockEntity().getBlockPos());
+    protected abstract ResourceLocation getTexture();
+
+    public DetectorScreen(T pMenu, Inventory inventory, Component pTitle, Class<Q> pClass) {
+        this(pMenu, inventory, pTitle, (pClass.cast(pMenu.getBlockEntity())).getBlockPos(), pClass);
     }
 
     private Pair<String, Integer> getAccountDetails() {
@@ -129,7 +134,7 @@ public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
         // Send packet to server
         AdminShop.LOGGER.debug("Setting detector threshold to "+value);
         Messages.sendToServer(new PacketSetDetectorThreshold(this.blockPos, value));
-        this.basicDetectorBE.setThreshold(value);
+        this.detectorBE.setThreshold(value);
         Minecraft.getInstance().player.sendSystemMessage(Component.literal("Set detector threshold to "+value));
     }
     private void createTextConfirmButton(int x, int y) {
@@ -188,9 +193,9 @@ public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
         Messages.sendToServer(new PacketUpdateRequest(this.blockPos));
     }
     private void updateInformation() {
-        this.ownerUUID = this.basicDetectorBE.getOwnerUUID();
-        this.account = this.basicDetectorBE.getAccount();
-        this.threshold = this.basicDetectorBE.getThreshold();
+        this.ownerUUID = this.detectorBE.getOwnerUUID();
+        this.account = this.detectorBE.getAccount();
+        this.threshold = this.detectorBE.getThreshold();
 
         this.usableAccounts.clear();
         ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
@@ -210,7 +215,7 @@ public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
     protected void renderBg(PoseStack pPoseStack, float pPartialTicks, int pMouseX, int pMouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderTexture(0, getTexture());
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
@@ -239,11 +244,11 @@ public class DetectorScreen extends AbstractContainerScreen<DetectorMenu> {
         renderTooltip(pPoseStack, mouseX, mouseY);
 
         // Get data from BlockEntity
-        this.basicDetectorBE = this.getMenu().getBlockEntity();
+        this.detectorBE = this.detectorClass.cast(this.getMenu().getBlockEntity());
 
-        String detectorOwnerUUID = this.basicDetectorBE.getOwnerUUID();
-        Pair<String, Integer> detectorAccount = this.basicDetectorBE.getAccount();
-        long detectorThreshold = this.basicDetectorBE.getThreshold();
+        String detectorOwnerUUID = this.detectorBE.getOwnerUUID();
+        Pair<String, Integer> detectorAccount = this.detectorBE.getAccount();
+        long detectorThreshold = this.detectorBE.getThreshold();
 
         boolean shouldUpdateDueToNulls = (this.ownerUUID == null && detectorOwnerUUID != null) ||
                 (this.account == null && detectorAccount != null);

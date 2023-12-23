@@ -39,9 +39,13 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("fluid_seller", () -> BlockEntityType.Builder.of(FluidSellerBE::new,
                     ModBlocks.FLUID_SELLER.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<BasicDetectorBE>> DETECTOR =
+    public static final RegistryObject<BlockEntityType<BasicDetectorBE>> BASIC_DETECTOR =
             BLOCK_ENTITIES.register("detector", () -> BlockEntityType.Builder.of(BasicDetectorBE::new,
                     ModBlocks.DETECTOR.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<AdvancedDetectorBE>> ADVANCED_DETECTOR =
+            BLOCK_ENTITIES.register("adv_detector", () -> BlockEntityType.Builder.of(AdvancedDetectorBE::new,
+                    ModBlocks.ADVANCED_DETECTOR.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

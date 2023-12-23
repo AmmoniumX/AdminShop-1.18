@@ -45,6 +45,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> DETECTOR = registerLoreBlock("detector",
             BasicDetector::new, ModSetup.ITEM_GROUP, "Outputs full redstone signal if greater than threshold");
 
+    public static final RegistryObject<Block> ADVANCED_DETECTOR = registerLoreBlock("adv_detector",
+            AdvancedDetector::new, ModSetup.ITEM_GROUP, "Outputs analog redstone signal proportional on balance between 0 and threshold");
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, CreativeModeTab tab) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn, tab);

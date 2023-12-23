@@ -1,10 +1,10 @@
 package com.ammonium.adminshop.blocks;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.blocks.entity.BasicDetectorBE;
+import com.ammonium.adminshop.blocks.entity.AdvancedDetectorBE;
 import com.ammonium.adminshop.blocks.entity.ModBlockEntities;
 import com.ammonium.adminshop.money.MoneyManager;
-import com.ammonium.adminshop.screen.BasicDetectorMenu;
+import com.ammonium.adminshop.screen.AdvancedDetectorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,7 +30,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -38,31 +40,33 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class BasicDetector extends BaseEntityBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+public class AdvancedDetector extends BaseEntityBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final VoxelShape RENDER_SHAPE = Shapes.box(0.375, 0, 0.375, 0.625, 0.625, 0.625);
-    public BasicDetector() {
+
+    private static final VoxelShape RENDER_SHAPE = Shapes.box(0, 0, 0, 1, 0.125, 1);
+    public AdvancedDetector() {
         super(Properties.of(ModBlocks.machineBlock)
                 .sound(SoundType.METAL)
                 .strength(1.0f)
                 .lightLevel(state -> 0)
                 .dynamicShape()
                 .noOcclusion()
-                .noCollission()
         );
     }
 
     @Override
     public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
         if (direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) return 0;
-        return state.getValue(LIT) ? 15 : 0;
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof AdvancedDetectorBE advancedDetectorBE) {
+            return advancedDetectorBE.getSignal();
+        }
+        return 0;
     }
 
     @Override
     public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
-        if (direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) return 0;
-        return state.getValue(LIT) ? 15 : 0;
+        return getSignal(state, world, pos, direction);
     }
 
     @Override
@@ -83,7 +87,7 @@ public class BasicDetector extends BaseEntityBlock {
     @Nullable
     @Override
     public MenuProvider getMenuProvider(BlockState pState, Level pLevel, BlockPos pPos) {
-        return new SimpleMenuProvider((id, playerInventory, player) -> new BasicDetectorMenu(id, playerInventory, pLevel, pPos), Component.translatable("screen.adminshop.buyer"));
+        return new SimpleMenuProvider((id, playerInventory, player) -> new AdvancedDetectorMenu(id, playerInventory, pLevel, pPos), Component.translatable("screen.adminshop.buyer"));
     }
 
     @Override
@@ -93,11 +97,11 @@ public class BasicDetector extends BaseEntityBlock {
             // Server side code
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             // Set initial values
-            if (pPlacer instanceof ServerPlayer serverPlayer && blockEntity instanceof BasicDetectorBE basicDetectorBE) {
+            if (pPlacer instanceof ServerPlayer serverPlayer && blockEntity instanceof AdvancedDetectorBE advancedDetectorBE) {
                 MoneyManager moneyManager = MoneyManager.get(pLevel);
                 Pair<String, Integer> defaultAccount = moneyManager.getDefaultAccount(serverPlayer.getStringUUID());
-                basicDetectorBE.setOwnerUUID(serverPlayer.getStringUUID());
-                basicDetectorBE.setAccount(defaultAccount);
+                advancedDetectorBE.setOwnerUUID(serverPlayer.getStringUUID());
+                advancedDetectorBE.setAccount(defaultAccount);
             }
         }
     }
@@ -105,36 +109,24 @@ public class BasicDetector extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new BasicDetectorBE(pPos, pState);
+        return new AdvancedDetectorBE(pPos, pState);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite())
-                .setValue(LIT, true);
+        return this.defaultBlockState().setValue(LIT, false);
     }
-
-//    @Override
-//    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-//        boolean lit = pState.getValue(LIT);
-//        BlockState toggled = pState.setValue(LIT, !lit);
-//        pLevel.setBlock(pPos, toggled, 3);
-//        pLevel.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS,
-//                1.0f, 1.0f, false);
-//        pLevel.sendBlockUpdated(pPos, pState, toggled, 3);
-//        return InteractionResult.SUCCESS;
-//    }
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
                                  Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
-            if(pLevel.getBlockEntity(pPos) instanceof BasicDetectorBE basicDetectorBE) {
+            if(pLevel.getBlockEntity(pPos) instanceof AdvancedDetectorBE advancedDetectorBE) {
 
-                if (Objects.equals(basicDetectorBE.getOwnerUUID(), pPlayer.getStringUUID())) {
+                if (Objects.equals(advancedDetectorBE.getOwnerUUID(), pPlayer.getStringUUID())) {
                     // Open menu
                     AdminShop.LOGGER.debug("Opening screen");
-                    NetworkHooks.openScreen((ServerPlayer) pPlayer, basicDetectorBE, pPos);
+                    NetworkHooks.openScreen((ServerPlayer) pPlayer, advancedDetectorBE, pPos);
                 } else {
                     // Wrong user
                     pPlayer.sendSystemMessage(Component.literal("You are not this machine's owner!"));
@@ -151,34 +143,23 @@ public class BasicDetector extends BaseEntityBlock {
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof BasicDetectorBE basicDetectorBE) {
-                basicDetectorBE.setRemoved();
+            if (blockEntity instanceof AdvancedDetectorBE advancedDetectorBE) {
+                advancedDetectorBE.setRemoved();
             }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRotation) {
-        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
-    }
-
-    @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING)
-                .add(LIT);
+        builder.add(LIT);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide() ? null : checkType(pBlockEntityType, ModBlockEntities.BASIC_DETECTOR.get(),
-                (level, pos, state, blockEntity) -> BasicDetectorBE.tick(level, pos, state, (BasicDetectorBE) blockEntity));
+        return pLevel.isClientSide() ? null : checkType(pBlockEntityType, ModBlockEntities.ADVANCED_DETECTOR.get(),
+                (level, pos, state, blockEntity) -> AdvancedDetectorBE.tick(level, pos, state, (AdvancedDetectorBE) blockEntity));
     }
 
     private static <T extends BlockEntity> BlockEntityTicker<T> checkType(BlockEntityType<T> blockEntityType, BlockEntityType<?> expectedType, BlockEntityTicker<? super T> ticker) {

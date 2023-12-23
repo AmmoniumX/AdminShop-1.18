@@ -33,7 +33,8 @@ public class ClientSetup {
             MenuScreens.<FluidSellerMenu, FluidSellerScreen>register(ModMenuTypes.FLUID_SELLER_MENU.get(), (FluidSellerMenu menu,
             Inventory playerInventory, Component title) -> new FluidSellerScreen(menu, playerInventory, title,
                     menu.getBlockEntity().getBlockPos()));
-            MenuScreens.<DetectorMenu, DetectorScreen>register(ModMenuTypes.DETECTOR_MENU.get(), DetectorScreen::new);
+            MenuScreens.<BasicDetectorMenu, BasicDetectorScreen>register(ModMenuTypes.BASIC_DETECTOR_MENU.get(), BasicDetectorScreen::new);
+            MenuScreens.<AdvancedDetectorMenu, AdvancedDetectorScreen>register(ModMenuTypes.ADVANCED_DETECTOR_MENU.get(), AdvancedDetectorScreen::new);
             KeyInit.init();
         });
     }
