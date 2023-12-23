@@ -490,7 +490,7 @@ public class ShopAccountsCommand {
         // Check player is member of source account
         if (!moneyManager.getBankAccount(fromUUID, fromId).getMembers().contains(player.getStringUUID())) {
             AdminShop.LOGGER.error("Player "+player.getName().getString()+" has no access to account "+fromUUID+":"+fromId);
-            source.sendFailure(Component.literal("You have no access to account "+fromUUID+":"+fromId));
+            source.sendFailure(Component.literal("You have no access to account "+fromName+":"+fromId));
             return 0;
         }
         // Check if source account has enough balance
