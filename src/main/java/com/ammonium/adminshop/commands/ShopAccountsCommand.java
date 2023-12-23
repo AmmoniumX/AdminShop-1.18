@@ -444,6 +444,11 @@ public class ShopAccountsCommand {
 
     private static int transferMoney(CommandSourceStack source, int amount, String fromName, int fromId, String toName,
                                      int toId) throws CommandSyntaxException {
+        // Skip non-positive values
+        if (!(amount>0)) {
+            source.sendFailure(Component.literal("Must be a positive value!"));
+            return 0;
+        }
         // Get player and moneyManager
         ServerPlayer player = source.getPlayerOrException();
         MoneyManager moneyManager = MoneyManager.get(source.getLevel());
@@ -480,6 +485,12 @@ public class ShopAccountsCommand {
             AdminShop.LOGGER.error("Destination account doesn't exist.");
             source.sendFailure(Component.literal("Destination account doesn't exist! Use an existing " +
                     "ID from /shopAccounts listAccounts"));
+            return 0;
+        }
+        // Check player is member of source account
+        if (!moneyManager.getBankAccount(fromUUID, fromId).getMembers().contains(player.getStringUUID())) {
+            AdminShop.LOGGER.error("Player "+player.getName().getString()+" has no access to account "+fromUUID+":"+fromId);
+            source.sendFailure(Component.literal("You have no access to account "+fromUUID+":"+fromId));
             return 0;
         }
         // Check if source account has enough balance

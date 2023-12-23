@@ -96,7 +96,7 @@ public class AdminShopCommand {
     }
 
     static int giveMoney(CommandSourceStack source, EntitySelector selector, int id, int amount) throws CommandSyntaxException {
-        // Remove non-positive values
+        // Skip non-positive values
         if (!(amount>0)) {
             source.sendFailure(Component.literal("Must be a positive value!"));
             return 0;
@@ -118,6 +118,7 @@ public class AdminShopCommand {
 
         if (!success) {
             source.sendFailure(Component.literal("Error adding money to account"));
+            return 0;
         }
 
         // Sync client data with all onlineMembers
@@ -138,7 +139,7 @@ public class AdminShopCommand {
     }
 
     static int removeMoney(CommandSourceStack source, EntitySelector selector, int id, int amount) throws CommandSyntaxException {
-        // Remove non-positive values
+        // Skip non-positive values
         if (!(amount>0)) {
             source.sendFailure(Component.literal("Must be a positive value!"));
             return 0;
@@ -160,6 +161,7 @@ public class AdminShopCommand {
 
         if (!success) {
             source.sendFailure(Component.literal("Error removing money from account"));
+            return 0;
         }
 
         // Sync client data with all onlineMembers
