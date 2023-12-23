@@ -56,7 +56,7 @@ public class AdvancedDetector extends BaseEntityBlock {
 
     @Override
     public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
-        if (direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) return 0;
+        if (direction.equals(Direction.UP)) return 0;
         BlockEntity be = world.getBlockEntity(pos);
         if (be instanceof AdvancedDetectorBE advancedDetectorBE) {
             return advancedDetectorBE.getSignal();

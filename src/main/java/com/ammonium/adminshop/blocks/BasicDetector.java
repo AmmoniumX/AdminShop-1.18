@@ -55,13 +55,13 @@ public class BasicDetector extends BaseEntityBlock {
 
     @Override
     public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
-        if (direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) return 0;
+        if (direction.equals(Direction.UP)) return 0;
         return state.getValue(LIT) ? 15 : 0;
     }
 
     @Override
     public int getDirectSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
-        if (direction.equals(Direction.UP) || direction.equals(Direction.DOWN)) return 0;
+        if (direction.equals(Direction.UP)) return 0;
         return state.getValue(LIT) ? 15 : 0;
     }
 
@@ -113,17 +113,6 @@ public class BasicDetector extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite())
                 .setValue(LIT, true);
     }
-
-//    @Override
-//    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-//        boolean lit = pState.getValue(LIT);
-//        BlockState toggled = pState.setValue(LIT, !lit);
-//        pLevel.setBlock(pPos, toggled, 3);
-//        pLevel.playLocalSound(pPos.getX(), pPos.getY(), pPos.getZ(), SoundEvents.COMPARATOR_CLICK, SoundSource.BLOCKS,
-//                1.0f, 1.0f, false);
-//        pLevel.sendBlockUpdated(pPos, pState, toggled, 3);
-//        return InteractionResult.SUCCESS;
-//    }
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,

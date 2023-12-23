@@ -83,6 +83,7 @@ public class BasicDetectorBE extends BlockEntity implements Detector {
                     pLevel.setBlock(pPos, pState.setValue(BasicDetector.LIT, newVal), 3);
                     pBlockEntity.setChanged();
                     pBlockEntity.sendUpdates();
+                    pLevel.updateNeighborsAt(pPos, pState.getBlock());
                 }
 
             }
