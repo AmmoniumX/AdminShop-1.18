@@ -76,6 +76,9 @@ public class AdminShop {
                                 output.accept(ModBlocks.SELLER.get());
                                 output.accept(ModBlocks.FLUID_BUYER.get());
                                 output.accept(ModBlocks.FLUID_SELLER.get());
+                                output.accept(ModItems.TABLET.get());
+                                output.accept(ModBlocks.DETECTOR.get());
+                                output.accept(ModBlocks.ADVANCED_DETECTOR.get());
                             })
             );
         }

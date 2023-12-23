@@ -31,6 +31,11 @@ public class ModMenuTypes {
             () -> IForgeMenuType.create((FluidBuyerMenu::new)));
     public static final RegistryObject<MenuType<FluidSellerMenu>> FLUID_SELLER_MENU = MENUS.register("fluid_seller_menu",
             () -> IForgeMenuType.create((FluidSellerMenu::new)));
+    public static final RegistryObject<MenuType<BasicDetectorMenu>> BASIC_DETECTOR_MENU = MENUS.register("detector_menu",
+            () -> IForgeMenuType.create((BasicDetectorMenu::new)));
+
+    public static final RegistryObject<MenuType<AdvancedDetectorMenu>> ADVANCED_DETECTOR_MENU = MENUS.register("advanced_detector_menu",
+            () -> IForgeMenuType.create((AdvancedDetectorMenu::new)));
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);

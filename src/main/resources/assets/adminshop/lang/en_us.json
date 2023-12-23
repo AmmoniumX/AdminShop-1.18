@@ -13,12 +13,17 @@
   "block.adminshop.buyer_3": "T3 Buyer",
   "block.adminshop.fluid_buyer": "Fluid Buyer",
   "block.adminshop.fluid_seller": "Fluid Seller",
+  "block.adminshop.detector": "Balance Detector",
+  "screen.adminshop.detector": "Detector",
+  "block.adminshop.adv_detector": "Advanced Balance Detector",
+  "screen.adminshop.adv_detector": "Advanced Detector",
   "item_group.adminshop": "Admin Shop",
   "screen.adminshop.seller": "Seller",
   "screen.adminshop.buyer": "Buyer",
   "item_group.adminshop.creativetab": "AdminShop",
   "item.adminshop.permit": "Trade Permit",
   "item.adminshop.manual": "Economics 101",
+  "item.adminshop.tablet": "Shopping Tablet",
   "jei.category.buy.title": "Shop Buy Offers",
   "jei.category.sell.title": "Shop Sell Offers"
 }

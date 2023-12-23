@@ -75,6 +75,11 @@ public class Messages {
                 .encoder(PacketUpdateRequest::toBytes)
                 .consumerMainThread(PacketUpdateRequest::handle)
                 .add();
+        net.messageBuilder(PacketSetDetectorThreshold.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketSetDetectorThreshold::new)
+                .encoder(PacketSetDetectorThreshold::toBytes)
+                .consumerMainThread(PacketSetDetectorThreshold::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

@@ -31,7 +31,6 @@ import java.util.*;
  * Loads and stores the shop contents from a csv file. Is a singleton.
  */
 public class Shop {
-
     private static final Path SHOP_FILE_PATH = FMLPaths.CONFIGDIR.get().resolve("adminshop/shop.csv");
     private static final String DEFAULT_SHOP_FILE = "assets/adminshop/default_shop.csv";
 
@@ -245,17 +244,17 @@ public class Shop {
 
         //Parse file
         List<List<String>> parsedCSV = CSVParser.parseCSV(csv);
+        AdminShop.LOGGER.debug("Reading "+parsedCSV.size()+" shop lines...");
         int line = 0;
         for(List<String> record : parsedCSV){
             line++;
             parseLine(record.toArray(new String[]{}), line, errors);
         }
-        ;
     }
 
     public void printErrors(CommandSource initiator){
-        AdminShop.LOGGER.debug("Errors size:"+errors.size()+", initiator:"+initiator);
         if(initiator instanceof LocalPlayer){
+            AdminShop.LOGGER.debug("Errors size:"+errors.size());
             if(errors.size() == 0) {
                 initiator.sendSystemMessage(Component.literal("Shop reloaded, syntax is correct!"));
             }
@@ -290,21 +289,21 @@ public class Shop {
             isError = true;
             return;
         }
-            //Check if buy or sell is correctly specified
+        //Check if buy or sell is correctly specified
         if(!(line[0].equalsIgnoreCase("buy") || line[0].equalsIgnoreCase("sell")
                 || line[0].equalsIgnoreCase("b") || line[0].equalsIgnoreCase("s"))){
             errors.add("Line "+lineNumber+": First column must be either \"buy\", \"sell\", \"b\", or \"s\""+
                     "Value: "+line[0]);
             isError = true;
         }
-            //Check if item or fluid is correctly specified
+        //Check if item or fluid is correctly specified
         if(!(line[1].equalsIgnoreCase("item") || line[1].equalsIgnoreCase("i")
                 || line[1].equals("fluid") || line[1].equalsIgnoreCase("f"))) {
             errors.add("Line "+lineNumber+": Second column must be either \"item\", \"fluid\", \"i\", or \"f\""+
                     "Value: "+line[1]);
             isError = true;
         }
-            //Check if price is a number
+        //Check if price is a number
         long price;
         try {
             price = Long.parseLong(line[3]);
@@ -313,7 +312,7 @@ public class Shop {
             errors.add("Line "+lineNumber+": Fourth column must be a whole number. Value:"+line[3]);
             isError = true;
         }
-            // Check if permit tier is a non-negative integer
+        // Check if permit tier is a non-negative integer
         int permitTier;
         try {
             permitTier = Integer.parseInt(line[4]);
@@ -333,10 +332,10 @@ public class Shop {
             return;
         }
 
-            //Check if buy or sell
+        //Check if buy or sell
         boolean isBuy = line[0].equalsIgnoreCase("buy") || line[0].equalsIgnoreCase("b");
 
-            //Check if both tag and buying
+        //Check if both tag and buying
         boolean isTag = line[2].contains("<tag:") || line[2].contains("#");
         if(isTag && isBuy){
             errors.add("Line "+lineNumber+": Tags can only be sold, not bought." +
@@ -389,7 +388,7 @@ public class Shop {
         String itemResource = line[2];
         StringBuilder nameBuilder = new StringBuilder();
         String[] split = itemResource.split(":");
-            //KubeJS style
+        //KubeJS style
         if (split.length == 1) {
             errors.add("Line "+lineNumber+": Item \""+itemResource+"\" is not a recognized item");
             isError = true;
@@ -410,7 +409,7 @@ public class Shop {
                 }
             }
         }
-            //Crafttweaker style
+        //Crafttweaker style
         else{
             //mod name : item name, remove the > at the end
             if(isTag){
@@ -481,7 +480,8 @@ public class Shop {
             return;
         }
 
-        AdminShop.LOGGER.debug("Adding ShopItem: isBuy="+isBuy+", isItem="+isItem+", isTag="+isTag+", item:"+itemResource+", nbt:"+((nbtText != null) ? nbtText : "none"));
+//        AdminShop.LOGGER.debug("Adding ShopItem: isBuy="+isBuy+", isItem="+isItem+", isTag="+isTag+", item:"+
+//                itemResource+", nbt:"+((nbtText != null) ? nbtText : "none"));
         ShopItem shopItem = new ShopItem.Builder()
                 .setIsBuy(isBuy)
                 .setIsItem(isItem)
@@ -491,14 +491,14 @@ public class Shop {
                 .setPermitTier(permitTier)
                 .build();
 
-            //Check if ShopItem was created correctly
+        //Check if ShopItem was created correctly
         if(!isTag && shopItem.getItem() == null){
             errors.add("Line "+lineNumber+": Shop Item could not be created. The item or fluid name does not map to" +
                     " an existing item or fluid.");
             isError = true;
             return;
         }
-            //Check if ShopItem found a matching item/fluid for the supplied tag
+        //Check if ShopItem found a matching item/fluid for the supplied tag
         if(isTag && shopItem.getItem() == null){
             errors.add("Line "+lineNumber+": [WARNING] Supplied tag does not match any existing item or fluid." +
                     " The shop item will still be created, but will be virtually useless until something is mapped to" +

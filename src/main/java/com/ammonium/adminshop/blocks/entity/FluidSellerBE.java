@@ -61,6 +61,8 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
 
     public void setOwnerUUID(String ownerUUID) {
         this.ownerUUID = ownerUUID;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public String getOwnerUUID() {
@@ -69,6 +71,8 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
 
     public void setAccount(Pair<String, Integer> account) {
         this.account = account;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public Pair<String, Integer> getAccount() {

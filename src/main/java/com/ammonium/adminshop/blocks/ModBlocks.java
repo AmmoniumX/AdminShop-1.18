@@ -24,21 +24,27 @@ public class ModBlocks {
     public static final RegistryObject<Block> SHOP = registerLoreBlock("shop",
             ShopBlock::new, "Buy and Sell Items!");
     public static final RegistryObject<Block> BUYER_1 = registerLoreBlock("buyer_1",
-            BuyerBlock::new, "Max Buy Speed: 4 items/second");
+            BuyerBlock::new, "Automatically buys up to 4 items/second");
 
     public static final RegistryObject<Block> BUYER_2 = registerLoreBlock("buyer_2",
-            Buyer2Block::new, "Max Buy Speed: 16 items/second");
+            Buyer2Block::new, "Automatically buys up to 16 items/second");
     public static final RegistryObject<Block> BUYER_3 = registerLoreBlock("buyer_3",
-            Buyer3Block::new, "Max Buy Speed: 64 items/second");
+            Buyer3Block::new, "Automatically buys up to 64 items/second");
 
     public static final RegistryObject<Block> SELLER = registerLoreBlock("seller",
-            SellerBlock::new, "Max Sell Speed: 64 items/second");
+            SellerBlock::new, "Automatically buys up to 64 items/second");
 
     public static final RegistryObject<Block> FLUID_BUYER = registerLoreBlock("fluid_buyer",
-            FluidBuyerBlock::new, "Max Buy Speed: 4000mb/second");
+            FluidBuyerBlock::new, "Automatically buys up to 4000mb/second");
 
     public static final RegistryObject<Block> FLUID_SELLER = registerLoreBlock("fluid_seller",
-            FluidSellerBlock::new, "Max Sell Speed: 64000mb/second");
+            FluidSellerBlock::new, "Automatically sells up to 64000mb/second");
+
+    public static final RegistryObject<Block> DETECTOR = registerLoreBlock("detector",
+            BasicDetector::new, "Outputs full redstone signal if greater than threshold");
+
+    public static final RegistryObject<Block> ADVANCED_DETECTOR = registerLoreBlock("adv_detector",
+            AdvancedDetector::new, "Outputs analog redstone signal proportional on balance between 0 and threshold");
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
