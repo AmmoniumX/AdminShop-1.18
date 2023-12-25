@@ -1,14 +1,5 @@
 package com.ammonium.adminshop.block.entity;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.block.interfaces.ShopMachine;
 import com.ammonium.adminshop.client.screen.FluidSellerMenu;
@@ -19,7 +10,6 @@ import com.ammonium.adminshop.setup.Messages;
 import com.ammonium.adminshop.setup.Registration;
 import com.ammonium.adminshop.shop.Shop;
 import com.ammonium.adminshop.shop.ShopItem;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -45,6 +35,14 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.IReverseTag;
 import net.minecraftforge.registries.tags.ITagManager;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachine {
     private String ownerUUID;
@@ -64,6 +62,8 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
 
     public void setOwnerUUID(String ownerUUID) {
         this.ownerUUID = ownerUUID;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public String getOwnerUUID() {
@@ -72,6 +72,8 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
 
     public void setAccount(Pair<String, Integer> account) {
         this.account = account;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public Pair<String, Integer> getAccount() {

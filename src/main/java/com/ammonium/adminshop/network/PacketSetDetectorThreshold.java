@@ -1,9 +1,7 @@
 package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.block.interfaces.BuyerMachine;
-import com.ammonium.adminshop.shop.Shop;
-import com.ammonium.adminshop.shop.ShopItem;
+import com.ammonium.adminshop.block.interfaces.Detector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,23 +11,23 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketSetBuyerTarget {
+public class PacketSetDetectorThreshold {
     private final BlockPos pos;
-    private final ShopItem targetItem;
+    private final long threshold;
 
-    public PacketSetBuyerTarget(BlockPos pos, ShopItem targetItem) {
+    public PacketSetDetectorThreshold(BlockPos pos, long threshold) {
         this.pos = pos;
-        this.targetItem = targetItem;
+        this.threshold = threshold;
     }
 
-    public PacketSetBuyerTarget(FriendlyByteBuf buf) {
+    public PacketSetDetectorThreshold(FriendlyByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.targetItem = Shop.get().getShopStockBuy().get(buf.readInt());
+        this.threshold = buf.readLong();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
-        buf.writeInt(Shop.get().getShopStockBuy().indexOf(this.targetItem));
+        buf.writeLong(this.threshold);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
@@ -42,24 +40,25 @@ public class PacketSetBuyerTarget {
             ServerPlayer player = ctx.getSender();
 
             if (player != null) {
-                System.out.println("Setting buyer target for "+this.pos+" to "+this.targetItem.toString());
-                // Get IBuyerBE
+                System.out.println("Setting detector threshold for "+this.pos+" to "+this.threshold);
+                // Get IDetectorBE
                 Level level = player.level();
                 BlockEntity blockEntity = level.getBlockEntity(this.pos);
-                if (!(blockEntity instanceof BuyerMachine buyerEntity)) {
-                    AdminShop.LOGGER.error("BlockEntity at pos is not BuyerMachine");
+                if (!(blockEntity instanceof Detector detectorBE)) {
+                    AdminShop.LOGGER.error("BlockEntity at pos is not Detector");
                     return;
                 }
                 // Check machine's owner is the same as player
-                if (!buyerEntity.getOwnerUUID().equals(player.getStringUUID())) {
+                if (!detectorBE.getOwnerUUID().equals(player.getStringUUID())) {
                     AdminShop.LOGGER.error("Player is not the machine's owner");
                     return;
                 }
-                System.out.println("Saving machine account information.");
-                // Apply changes to buyerEntity
-                buyerEntity.setTargetShopItem(this.targetItem);
+                System.out.println("Saving detector information.");
+                // Apply changes to detectorBE
+                detectorBE.setThreshold(this.threshold);
+                // Handled inside setThreshold()
 //                blockEntity.setChanged();
-//                buyerEntity.sendUpdates();
+//                detectorBE.sendUpdates();
             }
         });
         return true;

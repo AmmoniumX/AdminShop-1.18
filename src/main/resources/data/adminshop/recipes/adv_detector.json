@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "adminshop:detector"
+    },
+    "I": {
+      "item": "minecraft:stone"
+    },
+    "X": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "pattern": [
+    " # ",
+    "#X#",
+    "III"
+  ],
+  "result": {
+    "item": "adminshop:adv_detector"
+  }
+}

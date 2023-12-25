@@ -75,8 +75,9 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
 
     public void setOwnerUUID(String ownerUUID) {
         System.out.println("Saving seller ownerUUID");
-        this.setChanged();
         this.ownerUUID = ownerUUID;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public String getOwnerUUID() {
@@ -85,8 +86,9 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
 
     public void setAccount(Pair<String, Integer> account) {
         System.out.println("Saving seller account");
-        this.setChanged();
         this.account = account;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public Pair<String, Integer> getAccount() {

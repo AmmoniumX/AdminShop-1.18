@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "adminshop:block/adv_detector_off"
+    },
+    "lit=true": {
+      "model": "adminshop:block/adv_detector"
+    }
+  }
+}

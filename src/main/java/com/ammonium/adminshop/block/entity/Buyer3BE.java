@@ -78,6 +78,8 @@ public class Buyer3BE extends BlockEntity implements BuyerMachine, ItemShopMachi
 
     public void setOwnerUUID(String ownerUUID) {
         this.ownerUUID = ownerUUID;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public String getOwnerUUID() {
@@ -86,6 +88,8 @@ public class Buyer3BE extends BlockEntity implements BuyerMachine, ItemShopMachi
 
     public void setAccount(Pair<String, Integer> account) {
         this.account = account;
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public Pair<String, Integer> getAccount() {
@@ -95,6 +99,8 @@ public class Buyer3BE extends BlockEntity implements BuyerMachine, ItemShopMachi
     public void setTargetShopItem(ShopItem item) {
         this.targetShopItem = item;
         if(item != null) this.hasNBT = item.hasNBT();
+        this.setChanged();
+        this.sendUpdates();
     }
 
     public ShopItem getTargetShopItem() {

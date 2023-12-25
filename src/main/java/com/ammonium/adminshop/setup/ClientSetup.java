@@ -3,7 +3,6 @@ package com.ammonium.adminshop.setup;
 import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.client.KeyInit;
 import com.ammonium.adminshop.client.screen.*;
-
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +33,8 @@ public class ClientSetup {
             MenuScreens.<FluidSellerMenu, FluidSellerScreen>register(Registration.FLUID_SELLER_MENU.get(), (FluidSellerMenu menu,
             Inventory playerInventory, Component title) -> new FluidSellerScreen(menu, playerInventory, title,
                     menu.getBlockEntity().getBlockPos()));
-//            ItemBlockRenderTypes.setRenderLayer(ModBlocks.SHOP.get(), RenderType.translucent());
+            MenuScreens.<BasicDetectorMenu, BasicDetectorScreen>register(Registration.BASIC_DETECTOR_MENU.get(), BasicDetectorScreen::new);
+            MenuScreens.<AdvancedDetectorMenu, AdvancedDetectorScreen>register(Registration.ADVANCED_DETECTOR_MENU.get(), AdvancedDetectorScreen::new);
             KeyInit.init();
         });
     }

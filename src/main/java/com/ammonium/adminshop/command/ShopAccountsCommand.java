@@ -32,11 +32,11 @@ public class ShopAccountsCommand {
 
         // shopAccounts listAccounts
         LiteralArgumentBuilder<CommandSourceStack> listAccountsCommand = Commands.literal("listAccounts")
-                        .executes(command -> listAccounts(command.getSource()));
+                .executes(command -> listAccounts(command.getSource()));
 
         // shopAccounts createAccount [<members>]
         LiteralArgumentBuilder<CommandSourceStack> createAccountCommand = Commands.literal("createAccount")
-                        .executes(command -> createAccount(command.getSource()));
+                .executes(command -> createAccount(command.getSource()));
         RequiredArgumentBuilder<CommandSourceStack, String> createAccountWithMembersCommand =
                 Commands.argument("members", StringArgumentType.greedyString())
                         .executes((command) -> {
@@ -60,12 +60,12 @@ public class ShopAccountsCommand {
         RequiredArgumentBuilder<CommandSourceStack, Integer> addMemberCommandID = Commands.argument("id",
                 IntegerArgumentType.integer());
         RequiredArgumentBuilder<CommandSourceStack, String> addMemberCommandMember = Commands.argument("member",
-                StringArgumentType.string())
-                        .executes(command -> {
-                            int id = IntegerArgumentType.getInteger(command, "id");
-                            String member = StringArgumentType.getString(command, "member");
-                            return addMember(command.getSource(), id, member);
-                        });
+                        StringArgumentType.string())
+                .executes(command -> {
+                    int id = IntegerArgumentType.getInteger(command, "id");
+                    String member = StringArgumentType.getString(command, "member");
+                    return addMember(command.getSource(), id, member);
+                });
         addMemberCommand.then(addMemberCommandID.then(addMemberCommandMember));
 
         // shopAccounts removeMember [id] [member]
@@ -103,26 +103,26 @@ public class ShopAccountsCommand {
         RequiredArgumentBuilder<CommandSourceStack, String> transferCommandTo = Commands.argument("toOwner",
                 StringArgumentType.string());
         RequiredArgumentBuilder<CommandSourceStack, Integer> transferCommandToId = Commands.argument("toId",
-                IntegerArgumentType.integer())
-                        .executes(command -> {
-                            int amount = IntegerArgumentType.getInteger(command, "amount");
-                            String fromOwner = StringArgumentType.getString(command, "fromOwner");
-                            int fromId = IntegerArgumentType.getInteger(command, "fromId");
-                            String toOwner = StringArgumentType.getString(command, "toOwner");
-                            int toId = IntegerArgumentType.getInteger(command, "toId");
-                            return transferMoney(command.getSource(), amount, fromOwner, fromId, toOwner, toId);
-                        });
+                        IntegerArgumentType.integer())
+                .executes(command -> {
+                    int amount = IntegerArgumentType.getInteger(command, "amount");
+                    String fromOwner = StringArgumentType.getString(command, "fromOwner");
+                    int fromId = IntegerArgumentType.getInteger(command, "fromId");
+                    String toOwner = StringArgumentType.getString(command, "toOwner");
+                    int toId = IntegerArgumentType.getInteger(command, "toId");
+                    return transferMoney(command.getSource(), amount, fromOwner, fromId, toOwner, toId);
+                });
         transferCommand.then(transferCommandAmount.then(transferCommandFrom.then(transferCommandFromId
                 .then(transferCommandTo.then(transferCommandToId)))));
 
         shopAccountsCommand.then(infoCommand)
-                    .then(listAccountsCommand)
-                    .then(createAccountCommand)
-                    .then(deleteAccountCommand)
-                    .then(addMemberCommand)
-                    .then(removeMemberCommand)
-                    .then(removePermitCommand)
-                    .then(transferCommand);
+                .then(listAccountsCommand)
+                .then(createAccountCommand)
+                .then(deleteAccountCommand)
+                .then(addMemberCommand)
+                .then(removeMemberCommand)
+                .then(removePermitCommand)
+                .then(transferCommand);
         dispatcher.register(shopAccountsCommand);
     }
 
@@ -162,23 +162,23 @@ public class ShopAccountsCommand {
                 }}
             );
             sharedAccountsSorted.forEach(bankAccount -> {
-            returnMessage.append("$");
-            returnMessage.append(bankAccount.getBalance());
-            returnMessage.append(": ");
-            returnMessage.append(getUsernameByUUID(source.getLevel(), bankAccount.getOwner()));
-            returnMessage.append(":");
-            returnMessage.append(bankAccount.getId());
-            returnMessage.append("\nPermits: ");
-            bankAccount.getPermits().forEach(permit -> {
-                returnMessage.append(permit);
-                returnMessage.append(",");
-            });
-            returnMessage.append("\nMembers: ");
-            bankAccount.getMembers().forEach(memberUUID -> {
-                returnMessage.append(getUsernameByUUID(source.getLevel(), memberUUID));
-                returnMessage.append(" ");
-            });
-            returnMessage.append("\n");
+                returnMessage.append("$");
+                returnMessage.append(bankAccount.getBalance());
+                returnMessage.append(": ");
+                returnMessage.append(getUsernameByUUID(source.getLevel(), bankAccount.getOwner()));
+                returnMessage.append(":");
+                returnMessage.append(bankAccount.getId());
+                returnMessage.append("\nPermits: ");
+                bankAccount.getPermits().forEach(permit -> {
+                    returnMessage.append(permit);
+                    returnMessage.append(",");
+                });
+                returnMessage.append("\nMembers: ");
+                bankAccount.getMembers().forEach(memberUUID -> {
+                    returnMessage.append(getUsernameByUUID(source.getLevel(), memberUUID));
+                    returnMessage.append(" ");
+                });
+                returnMessage.append("\n");
             });
         }
 
@@ -444,6 +444,11 @@ public class ShopAccountsCommand {
 
     private static int transferMoney(CommandSourceStack source, int amount, String fromName, int fromId, String toName,
                                      int toId) throws CommandSyntaxException {
+        // Skip non-positive values
+        if (!(amount>0)) {
+            source.sendFailure(Component.literal("Must be a positive value!"));
+            return 0;
+        }
         // Get player and moneyManager
         ServerPlayer player = source.getPlayerOrException();
         MoneyManager moneyManager = MoneyManager.get(source.getLevel());
@@ -480,6 +485,12 @@ public class ShopAccountsCommand {
             AdminShop.LOGGER.error("Destination account doesn't exist.");
             source.sendFailure(Component.literal("Destination account doesn't exist! Use an existing " +
                     "ID from /shopAccounts listAccounts"));
+            return 0;
+        }
+        // Check player is member of source account
+        if (!moneyManager.getBankAccount(fromUUID, fromId).getMembers().contains(player.getStringUUID())) {
+            AdminShop.LOGGER.error("Player "+player.getName().getString()+" has no access to account "+fromUUID+":"+fromId);
+            source.sendFailure(Component.literal("You have no access to account "+fromName+":"+fromId));
             return 0;
         }
         // Check if source account has enough balance

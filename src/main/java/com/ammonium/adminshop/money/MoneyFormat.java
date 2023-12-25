@@ -4,14 +4,13 @@ import com.ammonium.adminshop.setup.Config;
 import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class MoneyFormat extends DecimalFormat {
+public class MoneyFormat {
     public static final double FORMAT_START = 1000000;
+//    private final DecimalFormat decimalFormat = new DecimalFormat("#,###");
 
     public enum FormatType {
         FULL,
@@ -20,8 +19,7 @@ public class MoneyFormat extends DecimalFormat {
     }
 
     private MoneyFormat() {
-        super("#,###");
-        setRoundingMode(RoundingMode.DOWN);
+//        decimalFormat.setRoundingMode(RoundingMode.DOWN);
     }
 
     // Format value based on config
@@ -35,7 +33,7 @@ public class MoneyFormat extends DecimalFormat {
     // Format is always X irrespective of shift
     public static String forcedFormat(long value, FormatType forced) {
         return format(value, forced, forced);
-    };
+    }
 
     // If noShift not specified -> noShift = RAW
     public static String format(long value, FormatType noShift) {

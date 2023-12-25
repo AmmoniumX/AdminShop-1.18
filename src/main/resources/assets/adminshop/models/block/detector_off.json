@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/template_torch",
+  "render_type": "cutout",
+  "textures": {
+    "torch": "adminshop:block/detector_off"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 4, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 4, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 4, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -180, 0],
+      "translation": [0, 4, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "ground": {
+      "translation": [0, 4, 0],
+      "scale": [0.5, 0.5, 0.5]
+    }
+  }
+}
