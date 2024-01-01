@@ -4,7 +4,6 @@ import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.client.jei.ShopBuyWrapper;
 import com.ammonium.adminshop.client.jei.ShopSellWrapper;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -16,6 +15,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -253,14 +254,17 @@ public class Shop {
     }
 
     public void printErrors(CommandSource initiator){
-        if(initiator instanceof LocalPlayer){
-            AdminShop.LOGGER.debug("Errors size:"+errors.size());
-            if(errors.size() == 0) {
-                initiator.sendSystemMessage(Component.literal("Shop reloaded, syntax is correct!"));
-            }
-            errors.forEach(e -> initiator.sendSystemMessage(Component.literal(e)));
-            errors.clear();
+        if (initiator == null) return;
+        AdminShop.LOGGER.debug("Errors size:" + errors.size());
+        if (errors.size() == 0) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> initiator.sendSystemMessage(
+                    Component.literal("Shop reloaded, syntax is correct!")));
         }
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> errors.forEach(e -> initiator.sendSystemMessage(
+                Component.literal(e))));
+
+        errors.clear();
     }
 
     private void parseLine(String[] line, int lineNumber, List<String> errors){
