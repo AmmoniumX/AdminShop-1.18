@@ -1,7 +1,7 @@
 package com.ammonium.adminshop.network;
 
+import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.shop.Shop;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -27,7 +27,8 @@ public class PacketSyncShopToClient {
         ctx.enqueueWork(() -> {
             //Client side accessed here
             //Do NOT call client-only code though, since server needs to access this too
-            Shop.get().loadFromFile(Minecraft.getInstance().player);
+            AdminShop.LOGGER.info("Syncing shop data from Server...");
+            Shop.get().loadFromFile(shopData);
         });
         return true;
     }
