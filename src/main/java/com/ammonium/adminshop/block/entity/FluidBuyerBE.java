@@ -168,6 +168,14 @@ public class FluidBuyerBE extends FluidHandlerBlockEntity implements BuyerMachin
                         .getValue()+" does not exist");
                 return;
             }
+
+            // Check if has permit
+            if (!moneyManager.getBankAccount(buyerEntity.account).hasPermit(shopItem.getPermitTier())) {
+                AdminShop.LOGGER.error("Fluid buyer does not have permit tier "+shopItem.getPermitTier()+" for fluid "
+                        +shopItem.getFluid().getDisplayName()+"!");
+                return;
+            }
+
             String accOwner = buyerEntity.account.getKey();
             int accID = buyerEntity.account.getValue();
             // Check if account has enough money, if not reduce amount

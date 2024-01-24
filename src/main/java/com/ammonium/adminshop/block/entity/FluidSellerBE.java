@@ -192,7 +192,11 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
             int accID = sellerEntity.account.getValue();
 
 //            AdminShop.LOGGER.debug("Adding "+price+" to account for "+fluidStack.getAmount()+"mb");
-            boolean success = moneyManager.addBalance(accOwner, accID, price);
+            boolean success = true;
+            // Only give money if has the permit to sell
+            if (moneyManager.getBankAccount(accOwner, accID).hasPermit(shopItem.getPermitTier())) {
+                success = moneyManager.addBalance(accOwner, accID, price);
+            }
             if (success) {
                 FluidStack drained = sellerEntity.secureDrain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
 //                AdminShop.LOGGER.debug("Successfully drained "+drained+"mb");

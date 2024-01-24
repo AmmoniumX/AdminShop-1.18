@@ -184,6 +184,7 @@ public class Buyer3Screen extends AbstractContainerScreen<Buyer3Menu> {
                     LocalPlayer player = mc.player;
                     assert player != null;
                     player.sendSystemMessage(Component.literal("You haven't unlocked that yet!"));
+                    return false;
                 }
             }
         }
