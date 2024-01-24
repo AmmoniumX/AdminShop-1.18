@@ -211,6 +211,10 @@ public class MoneyManager extends SavedData {
         return sortedAccountMap.get(owner).get(id);
     }
 
+    public BankAccount getBankAccount(Pair<String, Integer> account) {
+        return getBankAccount(account.getKey(), account.getValue());
+    }
+
     /**
      * Deletes bank account from memory. Can't delete personal accounts (id 1)
      * @param owner the owner UUID
