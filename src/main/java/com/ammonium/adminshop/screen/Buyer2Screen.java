@@ -180,6 +180,7 @@ public class Buyer2Screen extends AbstractContainerScreen<Buyer2Menu> {
                     LocalPlayer player = Minecraft.getInstance().player;
                     assert player != null;
                     player.sendSystemMessage(Component.literal("You haven't unlocked that yet!"));
+                    return false;
                 }
             }
         }

@@ -181,6 +181,7 @@ public class BuyerScreen extends AbstractContainerScreen<BuyerMenu> {
                     LocalPlayer player = Minecraft.getInstance().player;
                     assert player != null;
                     player.sendSystemMessage(Component.literal("You haven't unlocked that yet!"));
+                    return false;
                 }
             }
         }
