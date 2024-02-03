@@ -108,7 +108,7 @@ public class Registration {
     }
 
     private static void registerCreativeTabItems() {
-        CREATIVE_MODE_TABS.register(MODID, () -> CreativeModeTab.builder()
+        CREATIVE_MODE_TABS.register("creativetab", () -> CreativeModeTab.builder()
         // Set name of tab to display
             .title(Component.translatable("item_group." + MODID + ".creativetab"))
             // Set icon of creative tab
