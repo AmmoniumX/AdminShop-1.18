@@ -17,8 +17,8 @@ public class MojangAPI {
         if (storedResults.containsKey(uuid)) {
             return storedResults.get(uuid);
         }
-
         // Search in mojang API
+        AdminShop.LOGGER.debug("Name for "+uuid+" not found, using Mojang API...");
         try {
             URL url = new URL("https://api.mojang.com/user/profile/" + uuid.replace("-", ""));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -50,7 +50,6 @@ public class MojangAPI {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        storedResults.put(uuid, uuid);
         return uuid;
     }
 }
