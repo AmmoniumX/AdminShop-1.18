@@ -33,8 +33,9 @@ public class SellerScreen extends AbstractContainerScreen<SellerMenu> {
     private Pair<String, Integer> account;
     private ChangeAccountButton changeAccountButton;
     private final List<Pair<String, Integer>> usableAccounts = new ArrayList<>();
-    // -1 if bankAccount is not in usableAccounts
-    private int usableAccountsIndex;
+
+    private int usableAccountsIndex = -1; // -1 for unset
+    private String username = "";
 
     public SellerScreen(SellerMenu pMenu, Inventory pPlayerInventory, Component pTitle, BlockPos blockPos) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -64,7 +65,7 @@ public class SellerScreen extends AbstractContainerScreen<SellerMenu> {
             // Change accounts
             changeAccounts();
             Minecraft.getInstance().player.sendSystemMessage(Component.literal("Changed account to "+
-                    MojangAPI.getUsernameByUUID(getAccountDetails().getKey())+":"+ getAccountDetails().getValue()));
+                    this.username+":"+ getAccountDetails().getValue()));
         });
         addRenderableWidget(changeAccountButton);
     }
@@ -90,6 +91,8 @@ public class SellerScreen extends AbstractContainerScreen<SellerMenu> {
         } else {
             this.usableAccountsIndex = (this.usableAccounts.indexOf(bankAccount) + 1) % this.usableAccounts.size();
         }
+        // Update username
+        this.username = MojangAPI.getUsernameByUUID(usableAccounts.get(usableAccountsIndex).getKey());
         // Send change package
 //        System.out.println("Registering account change with server...");
         Messages.sendToServer(new PacketMachineAccountChange(this.ownerUUID, getAccountDetails().getKey(),
@@ -100,6 +103,15 @@ public class SellerScreen extends AbstractContainerScreen<SellerMenu> {
         super.init();
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
+        // Fetch usable accounts
+        this.usableAccounts.clear();
+        ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
+                account.getId())));
+        if (this.usableAccounts.size() < 1) {
+            AdminShop.LOGGER.error("No usable accounts found!");
+        }
+        this.usableAccountsIndex = 0;
+        this.username = MojangAPI.getUsernameByUUID(getAccountDetails().getKey());
         createChangeAccountButton(relX, relY);
 
         // Request update from server
@@ -146,7 +158,7 @@ public class SellerScreen extends AbstractContainerScreen<SellerMenu> {
         boolean accAvailable = this.usableAccountsIndex != -1 && ClientLocalData.accountAvailable(account.getKey(),
                 account.getValue());
         int color = accAvailable ? 0xffffff : 0xff0000;
-        drawString(pPoseStack, font, MojangAPI.getUsernameByUUID(account.getKey())+":"+ account.getValue(),
+        drawString(pPoseStack, font, this.username+":"+ account.getValue(),
                 7,62,color);
     }
 

@@ -1,6 +1,8 @@
 package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,12 +17,13 @@ public class MojangAPI {
     public static String getUsernameByUUID(String uuid) {
         // Search in stored results
         if (storedResults.containsKey(uuid)) {
+            AdminShop.LOGGER.debug("Retrieving "+uuid+" to "+storedResults.get(uuid)+" from cache.");
             return storedResults.get(uuid);
         }
-
         // Search in mojang API
+        AdminShop.LOGGER.debug("Name for "+uuid+" not found, using Mojang API...");
         try {
-            URL url = new URL("https://api.mojang.com/user/profile/" + uuid.replace("-", ""));
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -38,10 +41,11 @@ public class MojangAPI {
 
                 // Extract the username from the response JSON
                 String jsonResponse = response.toString();
-                int nameStartIndex = jsonResponse.lastIndexOf("\"name\" : \"") + 10;
-                int nameEndIndex = jsonResponse.lastIndexOf("\"}");
-                // Save name to stored results and return
-                String name = jsonResponse.substring(nameStartIndex, nameEndIndex);
+                JsonObject jsonObj = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                // Extract the "name" field
+                String name = jsonObj.get("name").getAsString();
+
+                AdminShop.LOGGER.debug("Storing "+uuid+" to "+name+" in cache.");
                 storedResults.put(uuid, name);
                 return name;
             } else {
@@ -50,8 +54,7 @@ public class MojangAPI {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        storedResults.put(uuid, uuid);
+        AdminShop.LOGGER.error("No name found, returning UUID");
         return uuid;
     }
 }
-
