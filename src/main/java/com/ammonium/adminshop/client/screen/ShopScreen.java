@@ -456,6 +456,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         } else {
             this.usableAccountsIndex = (this.usableAccounts.indexOf(bankAccount) + 1) % this.usableAccounts.size();
         }
+        // Update username
+        this.username = MojangAPI.getUsernameByUUID(usableAccounts.get(usableAccountsIndex).getKey());
     }
     private void createSearchBar(int x, int y) {
         int searchBarWidth = 70;

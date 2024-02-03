@@ -177,6 +177,8 @@ public abstract class DetectorScreen<T extends DetectorMenu, Q extends Detector>
         } else {
             this.usableAccountsIndex = (this.usableAccounts.indexOf(bankAccount) + 1) % this.usableAccounts.size();
         }
+        // Update username
+        this.username = MojangAPI.getUsernameByUUID(usableAccounts.get(usableAccountsIndex).getKey());
         // Send change packet
         Messages.sendToServer(new PacketMachineAccountChange(this.ownerUUID, getAccountDetails().getKey(),
                 getAccountDetails().getValue(), this.blockPos));

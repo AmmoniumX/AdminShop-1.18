@@ -127,6 +127,8 @@ public class FluidBuyerScreen extends AbstractContainerScreen<FluidBuyerMenu> {
         } else {
             this.usableAccountsIndex = (this.usableAccounts.indexOf(bankAccount) + 1) % this.usableAccounts.size();
         }
+        // Update username
+        this.username = MojangAPI.getUsernameByUUID(usableAccounts.get(usableAccountsIndex).getKey());
         // Send change packet
 //        System.out.println("Registering account change with server...");
         Messages.sendToServer(new PacketMachineAccountChange(this.ownerUUID, getAccountDetails().getKey(),
