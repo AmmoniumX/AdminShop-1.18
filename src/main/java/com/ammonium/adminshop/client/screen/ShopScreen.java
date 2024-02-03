@@ -25,7 +25,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -43,7 +42,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.IReverseTag;
 import net.minecraftforge.registries.tags.ITagManager;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -69,7 +67,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private boolean isBuy; //Whether the Buy option is currently selected
     private Map<Pair<String, Integer>, BankAccount> accountMap;
     private final List<Pair<String, Integer>> usableAccounts = new ArrayList<>();
-    private int usableAccountsIndex;
+    private int usableAccountsIndex = -1; // -1 for unset
     private ChangeAccountButton changeAccountButton;
     private SetDefaultAccountButton setDefaultAccountButton;
     private BuySellButton buySellButton;
@@ -78,6 +76,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private String search = "";
     private final Pair<String, Integer> personalAccount;
     private int relX, relY;
+    private String username = "";
 
     public ShopScreen(ShopMenu container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -173,6 +172,15 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         super.init();
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
+        // Fetch usable accounts
+        this.usableAccounts.clear();
+        ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
+                account.getId())));
+        if (this.usableAccounts.size() < 1) {
+            AdminShop.LOGGER.error("No usable accounts found!");
+        }
+        this.usableAccountsIndex = 0;
+        this.username = MojangAPI.getUsernameByUUID(getAccountDetails().getKey());
         createShopButtons(false, relX, relY);
         createShopButtons(true, relX, relY);
         createBuySellButton(relX, relY);
@@ -240,8 +248,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
 
         //Player Balance
         BankAccount selectedAccount = getBankAccount();
-        Pair<String, Integer> selectedAccountInfo = Pair.of(selectedAccount.getOwner(), selectedAccount.getId());
-        long money = ClientLocalData.getMoney(selectedAccountInfo);
+        long money = ClientLocalData.getMoney(getAccountDetails());
         NumberFormat numberFormat = NumberFormat.getInstance();
         String formatted = Screen.hasAltDown() ? MoneyFormat.forcedFormat(money, MoneyFormat.FormatType.RAW) :
                 MoneyFormat.forcedFormat(money, MoneyFormat.FormatType.SHORT);
@@ -251,8 +258,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 6, 0xffffff); //x, y, color
 
         // Bank account
-        guiGraphics.drawString(font, MojangAPI.getUsernameByUUID(selectedAccountInfo.getKey())+":"+
-                selectedAccountInfo.getValue(),16,112,0xffffff);
+        guiGraphics.drawString(font, this.username+":"+
+                getAccountDetails().getValue(),16,112,0xffffff);
 
         //Tooltip for item the player is hovering over
         List<ShopButton> shopButtons = isBuy ? buyButtons : sellButtons;
@@ -407,7 +414,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
             Player player = mc.player;
             assert player != null;
             player.sendSystemMessage(Component.literal("Changed account to "+
-                    MojangAPI.getUsernameByUUID(getAccountDetails().getKey())+":"+
+                    this.username+":"+
                     getAccountDetails().getValue()));
         });
         addRenderableWidget(changeAccountButton);
@@ -422,7 +429,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
             Player player = mc.player;
             assert player != null;
             player.sendSystemMessage(Component.literal("Set default account to "+
-                    MojangAPI.getUsernameByUUID(getAccountDetails().getKey())+":"+
+                    this.username+":"+
                     getAccountDetails().getValue()));
         });
         addRenderableWidget(setDefaultAccountButton);
