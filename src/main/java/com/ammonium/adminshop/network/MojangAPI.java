@@ -21,7 +21,7 @@ public class MojangAPI {
             return storedResults.get(uuid);
         }
         // Search in mojang API
-        AdminShop.LOGGER.info("Name for "+uuid+" not found, using Mojang API...");
+        AdminShop.LOGGER.debug("Name for "+uuid+" not found, using Mojang API...");
         try {
             URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
