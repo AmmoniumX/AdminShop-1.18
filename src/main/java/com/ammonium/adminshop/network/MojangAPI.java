@@ -60,5 +60,6 @@ public class MojangAPI {
             e.printStackTrace();
         }
         AdminShop.LOGGER.error("No name found, returning UUID");
+        return uuid;
     }
 }
