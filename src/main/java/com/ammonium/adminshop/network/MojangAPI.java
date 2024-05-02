@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,10 +53,14 @@ public class MojangAPI {
             } else {
                 AdminShop.LOGGER.error("Mojang API request failed: " + responseCode);
             }
+        }
+        catch (ConnectException e) {
+            AdminShop.LOGGER.error("Network connection exception while getting username.");
+            storedResults.put(uuid, uuid);
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
         AdminShop.LOGGER.error("No name found, returning UUID");
-        storedResults.put(uuid, (apiName != null) ? apiName : + uuid);
     }
 }
