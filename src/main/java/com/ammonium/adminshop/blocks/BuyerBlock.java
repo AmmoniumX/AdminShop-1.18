@@ -2,6 +2,7 @@ package com.ammonium.adminshop.blocks;
 
 import com.ammonium.adminshop.blocks.entity.BuyerBE;
 import com.ammonium.adminshop.blocks.entity.ModBlockEntities;
+import com.ammonium.adminshop.money.ClientLocalData;
 import com.ammonium.adminshop.money.MoneyManager;
 import com.ammonium.adminshop.screen.BuyerMenu;
 import net.minecraft.core.BlockPos;
@@ -32,8 +33,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class BuyerBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -67,12 +66,12 @@ public class BuyerBlock extends BaseEntityBlock {
         if (!pLevel.isClientSide()) {
             if(pLevel.getBlockEntity(pPos) instanceof BuyerBE buyerEntity) {
 
-                if (Objects.equals(buyerEntity.getOwnerUUID(), pPlayer.getStringUUID())) {
+                if (ClientLocalData.getUsableAccountsStatic().contains(buyerEntity.getAccount())) {
                     // Open menu
                     NetworkHooks.openScreen((ServerPlayer) pPlayer, buyerEntity, pPos);
                 } else {
                     // Wrong user
-                    pPlayer.sendSystemMessage(Component.literal("You are not this machine's owner!"));
+                    pPlayer.sendSystemMessage(Component.literal("You don't have access to this machine's account!"));
                 }
 
             } else {

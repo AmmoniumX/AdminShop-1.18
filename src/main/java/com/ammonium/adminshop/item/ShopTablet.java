@@ -23,6 +23,11 @@ public class ShopTablet extends LoreItem{
     }
 
     @Override
+    public int getMaxStackSize(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
         if (!pLevel.isClientSide) {
             MenuProvider containerProvider = new MenuProvider() {

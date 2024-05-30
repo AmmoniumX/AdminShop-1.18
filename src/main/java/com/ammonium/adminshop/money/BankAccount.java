@@ -119,6 +119,10 @@ public class BankAccount {
     public Set<String> getMembers() {
         return members;
     }
+
+    public boolean containsMember(String playerUUID) {
+        return members.contains(playerUUID);
+    }
     public Set<Integer> getPermits() {
         return permits;
     }

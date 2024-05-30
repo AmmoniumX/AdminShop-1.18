@@ -1,6 +1,7 @@
 package com.ammonium.adminshop.setup;
 
 import com.ammonium.adminshop.AdminShop;
+import com.ammonium.adminshop.money.ClientLocalData;
 import com.ammonium.adminshop.network.PacketChangeDefaultAccount;
 import com.google.gson.*;
 import net.minecraft.client.Minecraft;
@@ -16,10 +17,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientConfig {
-    private static final String CLIENT_CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("adminshop").toString();
+    private static final Path CLIENT_CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("adminshop").resolve("client");
     private static final Gson GSON = new Gson();
     private static Pair<String, Integer> defaultAccount = null;
 
@@ -50,7 +52,7 @@ public class ClientConfig {
 
     private static JsonObject loadClientData() {
         assert Minecraft.getInstance().level != null && Minecraft.getInstance().level.isClientSide;
-        File clientDataFile = new File(CLIENT_CONFIG_FOLDER, getServerName() + "_client.json");
+        File clientDataFile = new File(CLIENT_CONFIG_FOLDER.toFile(), getServerName() + "_client.json");
         AdminShop.LOGGER.debug("Loading client data from "+clientDataFile);
         JsonObject readObject = new JsonObject();
         if (clientDataFile.exists()) {
@@ -67,7 +69,7 @@ public class ClientConfig {
 
     private static void saveClientData(JsonObject data) {
         assert Minecraft.getInstance().level != null && Minecraft.getInstance().level.isClientSide;
-        File clientDataFile = new File(CLIENT_CONFIG_FOLDER, getServerName() + "_client.json");
+        File clientDataFile = new File(CLIENT_CONFIG_FOLDER.toFile(), getServerName() + "_client.json");
         AdminShop.LOGGER.debug("Saving client config data to "+clientDataFile);
         // Make sure the directories exist
         clientDataFile.getParentFile().mkdirs();
@@ -89,13 +91,22 @@ public class ClientConfig {
         LocalPlayer player = Minecraft.getInstance().player;
         assert player != null;
         JsonObject clientData = ClientConfig.loadClientData();
+
+        // Default account: personal account
         defaultAccount = Pair.of(player.getStringUUID(), 1);
+
         if (clientData == null || clientData.isJsonNull()) {
             AdminShop.LOGGER.info("No default account data found");
             return defaultAccount;
         }
         if (clientData.has("accOwner") && clientData.has("accId")) {
-            defaultAccount = Pair.of(clientData.get("accOwner").getAsString(), clientData.get("accId").getAsInt());
+            String accOwner = clientData.get("accOwner").getAsString();
+            int accId = clientData.get("accId").getAsInt();
+            Pair<String, Integer> account = Pair.of(accOwner, accId);
+            // Only set new account if player actually has access to it
+            if (ClientLocalData.getUsableAccountsStatic().contains(account)) {
+                defaultAccount = account;
+            }
         }
         return defaultAccount;
     }
