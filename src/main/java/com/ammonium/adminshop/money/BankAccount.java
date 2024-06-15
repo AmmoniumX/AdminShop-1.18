@@ -176,15 +176,24 @@ public class BankAccount {
     }
 
     public boolean addBalance(long add) {
-        this.balance += add;
+        // Only accept positive values
+        if (add <= 0) return false;
+        // Overflow protection
+        if (this.balance > Long.MAX_VALUE - add) {
+            this.balance = Long.MAX_VALUE; // Set to max value if overflow would occur
+        } else {
+            this.balance += add; // Normal operation
+        }
         return true;
     }
 
     public boolean subtractBalance(long sub) {
+        // Only accept positive values
+        if (sub <= 0) return false;
+        // Fail if insufficient balance
         if (this.balance < sub) {
             return false;
         }
-
         this.balance -= sub;
         return true;
     }
