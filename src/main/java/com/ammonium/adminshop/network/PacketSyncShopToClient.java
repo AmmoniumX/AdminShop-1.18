@@ -29,7 +29,7 @@ public class PacketSyncShopToClient {
             //Client side accessed here
             // Sync shop
             AdminShop.LOGGER.info("Syncing shop data from Server...");
-            Shop.get().loadFromFile(shopData);
+            Shop.get().loadFromFile(shopData, ctx.getSender(), "PlayerLogin");
 
         });
         return true;

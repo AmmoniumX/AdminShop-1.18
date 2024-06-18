@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 
-version = '1.19.2-1.17.4'
+version = '1.19.2-1.17.4.1'
 group = 'com.ammonium.adminshop' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'adminshop'
 
@@ -67,7 +67,7 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'adminshop'
 
-            // patchouli fix
+            // other mod mappings fix
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
@@ -87,6 +87,10 @@ minecraft {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'adminshop'
+
+            // other mod mappings fix
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             mods {
                 adminshop {
@@ -210,7 +214,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     // runtimeOnly testing
-    runtimeOnly(fg.deobf("mekanism:Mekanism:${mc_version}-${mek_version}:all"))
+//    runtimeOnly(fg.deobf("mekanism:Mekanism:${mc_version}-${mek_version}:all"))
 
     //CSV Reader
     //implementation 'org.apache.commons:commons-csv:1.9.0'
@@ -219,7 +223,7 @@ dependencies {
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
     // Compatibility testing
-    implementation fg.deobf("maven.modrinth:pneumaticcraft-repressurized:${mc_version}-${pnc_version}")
+//    implementation fg.deobf("maven.modrinth:pneumaticcraft-repressurized:${mc_version}-${pnc_version}")
 //    implementation fg.deobf("com.simibubi.create:create-${mc_version}:${create_version}:slim") { transitive = false }
 //    implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${mc_version}:${flywheel_version}")
 //    implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")

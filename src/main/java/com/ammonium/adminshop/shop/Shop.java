@@ -9,16 +9,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,6 +34,7 @@ import java.util.*;
 public class Shop {
     private static final Path SHOP_FILE_PATH = FMLPaths.CONFIGDIR.get().resolve("adminshop/shop.csv");
     private static final String DEFAULT_SHOP_FILE = "assets/adminshop/default_shop.csv";
+    private static String CONTEXT = "unknown";
 
     //Matches "(value) as (var_type)" outside a string to turn back into just the value
 //    private static final String CT_CAST_REGEX = "([0-9]+(\\.[0-9]*)?|true|false) as " +
@@ -189,7 +190,8 @@ public class Shop {
     }
 
     public void loadFromFile(String csv, CommandSource initiator) {
-        AdminShop.LOGGER.debug("loadFromFile(String, CommandSource)");
+        AdminShop.LOGGER.debug("loadFromFile(String csv, " +
+                "CommandSource initiator="+(initiator != null ? initiator.toString() : "null")+")");
         //Clear out existing shop data
         shopTextRaw = csv;
         errors.clear();
@@ -251,20 +253,34 @@ public class Shop {
             line++;
             parseLine(record.toArray(new String[]{}), line, errors);
         }
+        AdminShop.LOGGER.debug("Calling printErrors from loadFromFile(String csv)");
+        printErrors(null);
+    }
+
+    public void loadFromFile(String csv, CommandSource initiator, String context) {
+        CONTEXT = context;
+        loadFromFile(csv, initiator);
     }
 
     public void printErrors(CommandSource initiator){
-        if (initiator == null) return;
+//        if (initiator == null) return;
+        AdminShop.LOGGER.debug("Initiator is null: "+(initiator == null));
+        AdminShop.LOGGER.debug("Initiator is ServerPlayer: "+ (initiator instanceof ServerPlayer));
+        AdminShop.LOGGER.debug("CONTEXT: "+CONTEXT);
+        String serverSide = (initiator instanceof ServerPlayer) ? "S" : "C";
         AdminShop.LOGGER.debug("Errors size:" + errors.size());
+
         if (errors.size() == 0) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> initiator.sendSystemMessage(
-                    Component.literal("Shop reloaded, syntax is correct!")));
+            AdminShop.LOGGER.info("Shop reloaded, syntax is correct");
+            return;
         }
-
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> errors.forEach(e -> initiator.sendSystemMessage(
-                Component.literal(e))));
-
-        errors.clear();
+        if (initiator != null) {
+            initiator.sendSystemMessage(Component.literal("["+errors.size()+" AdminShop shop.csv errors detected]"));
+            errors.forEach(e -> initiator.sendSystemMessage(Component.literal("["+e+"]")));
+        }
+        AdminShop.LOGGER.error("[AdminShop shop.csv errors]");
+        errors.forEach(e -> AdminShop.LOGGER.error(serverSide+"["+e+"]"));
+//        errors.clear();
     }
 
     private void parseLine(String[] line, int lineNumber, List<String> errors){
@@ -398,13 +414,13 @@ public class Shop {
             isError = true;
         } else if(split.length == 2){
             if(isTag){
-                AdminShop.LOGGER.debug("KubeJS Tag");
+//                AdminShop.LOGGER.debug("KubeJS Tag");
                 nameBuilder.append(split[0].substring(1));
                 nameBuilder.append(':');
                 nameBuilder.append(split[1]);
                 itemResource = nameBuilder.toString();
             }else{
-                AdminShop.LOGGER.debug("KubeJS Item");
+//                AdminShop.LOGGER.debug("KubeJS Item");
                 // Parse if in Item.of(''), form
                 if(itemResource.startsWith("Item.of('") && itemResource.endsWith("',")) {
                     AdminShop.LOGGER.debug("Trimming Item.of(''),");
@@ -458,23 +474,50 @@ public class Shop {
         }   // Second check: selling and item/fluid tag exists
         else if (isTag) {
             if (isItem) {
-                TagKey<Item> itemTag = ItemTags.create(resourceLocation);
-                Optional<Item> oItem = ForgeRegistries.ITEMS.getValues().stream()
-                        .filter(i -> new ItemStack(i).is(itemTag))
-                        .findFirst();
-                if (oItem.isEmpty()) {
-                    errors.add("Line "+lineNumber+": Item tag \""+itemResource+"\" is not a valid item tag!");
+                if (ForgeRegistries.ITEMS.isEmpty()) {
+                    AdminShop.LOGGER.error("Item registry is not yet loaded!");
                     isError = true;
                 }
-            } else {
-                TagKey<Fluid> fluidTag = FluidTags.create(resourceLocation);
-                Optional<Fluid> oFluid = ForgeRegistries.FLUIDS.getValues().stream()
-                        .filter(f ->
-                            ForgeRegistries.FLUIDS.getHolder(f).map(fluidHolder -> fluidHolder.is(fluidTag)).orElse(false)
-                        ).findAny();
-                if (oFluid.isEmpty()) {
-                    errors.add("Line "+lineNumber+": Fluid tag \""+itemResource+"\" is not a valid fluid tag!");
+                // Get item tag
+                ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
+                if (tags == null) {
+                    AdminShop.LOGGER.debug("ForgeRegistries.ITEMS.tags() is null");
                     isError = true;
+                } else {
+                    TagKey<Item> itemTag = ItemTags.create(resourceLocation);
+                    Optional<Item> itemFromTag = tags.getTag(itemTag).stream().findAny();
+                    if (itemFromTag.isPresent()) {
+                        AdminShop.LOGGER.debug("Found item tag: "+itemFromTag.get());
+                    } else {
+                        errors.add("Line "+lineNumber+": Item tag \""+itemResource+"\" is not a valid item tag!");
+                        AdminShop.LOGGER.debug("No item tag found for "+itemResource);
+                        isError = true;
+                    }
+//                    AdminShop.LOGGER.debug("-Item tag names count: "+tags.getTagNames().count());
+//                    AdminShop.LOGGER.debug("-Example first: "+tags.getTagNames().findAny().orElse(null));
+//                    AdminShop.LOGGER.debug("-Another example: "+tags.stream().findAny().orElse(null));
+                }
+
+            } else {
+                if (ForgeRegistries.FLUIDS.isEmpty()) {
+                    AdminShop.LOGGER.error("Item registry is not yet loaded!");
+                    isError = true;
+                }
+                // Get fluid tag
+                ITagManager<Fluid> tags = ForgeRegistries.FLUIDS.tags();
+                if (tags == null) {
+                    AdminShop.LOGGER.debug("ForgeRegistries.FLUIDS.tags() is null");
+                    isError = true;
+                } else {
+                    TagKey<Fluid> fluidTag = FluidTags.create(resourceLocation);
+                    Optional<Fluid> fluidFromTag = tags.getTag(fluidTag).stream().findAny();
+                    if (fluidFromTag.isPresent()) {
+                        AdminShop.LOGGER.debug("Found fluid tag: "+fluidFromTag.get());
+                    } else {
+                        errors.add("Line " + lineNumber + ": Fluid tag \"" + itemResource + "\" is not a valid fluid tag!");
+                        AdminShop.LOGGER.debug("No fluid tag found for "+itemResource);
+                        isError = true;
+                    }
                 }
             }
         }
