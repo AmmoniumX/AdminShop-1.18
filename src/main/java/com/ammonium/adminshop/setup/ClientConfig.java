@@ -85,6 +85,7 @@ public class ClientConfig {
     public static Pair<String, Integer> getDefaultAccount() {
         // Get account from memory if possible
         if (defaultAccount != null) {
+//            AdminShop.LOGGER.debug("Getting default account: "+defaultAccount.toString());
             return defaultAccount;
         }
         // Obtain from reading config
@@ -108,6 +109,7 @@ public class ClientConfig {
                 defaultAccount = account;
             }
         }
+//        AdminShop.LOGGER.debug("Getting default account: "+defaultAccount.toString());
         return defaultAccount;
     }
 
@@ -121,7 +123,6 @@ public class ClientConfig {
         clientData.addProperty("accOwner", account.getKey());
         clientData.addProperty("accId", account.getValue());
         ClientConfig.saveClientData(clientData);
-
         // Send change packet to server
         Messages.sendToServer(new PacketChangeDefaultAccount(Minecraft.getInstance().player.getStringUUID(), account.getKey(), account.getValue()));
     }

@@ -1,14 +1,12 @@
 package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
-import com.ammonium.adminshop.money.BankAccount;
 import com.ammonium.adminshop.money.MoneyManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 public class PacketChangeDefaultAccount {
@@ -46,9 +44,8 @@ public class PacketChangeDefaultAccount {
                 AdminShop.LOGGER.info("Setting default account for "+this.player+" to "+this.accOwner+":"+this.accID);
                 // Check if chosen new account is in player's usable accounts
                 MoneyManager moneyManager = MoneyManager.get(player.getLevel());
-                List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(player.getStringUUID());
-                boolean hasAccess = usableAccounts.stream().anyMatch(account ->
-                        (account.getOwner().equals(this.accOwner) && account.getId() == this.accID));
+                boolean hasAccess = moneyManager.getBankAccount(this.accOwner, this.accID)
+                        .containsMember(this.player);
                 if (!hasAccess) {
                     AdminShop.LOGGER.error("Player does not have access to that account");
                     return;

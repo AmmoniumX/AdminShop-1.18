@@ -1,12 +1,13 @@
 package com.ammonium.adminshop.blocks;
 
+import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.blocks.entity.ModBlockEntities;
 import com.ammonium.adminshop.blocks.entity.SellerBE;
-import com.ammonium.adminshop.money.ClientLocalData;
 import com.ammonium.adminshop.money.MoneyManager;
 import com.ammonium.adminshop.screen.SellerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -64,14 +65,20 @@ public class SellerBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
                                  Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
-            if(pLevel.getBlockEntity(pPos) instanceof SellerBE sellerEntity) {
-
-                if (ClientLocalData.getUsableAccountsStatic().contains(sellerEntity.getAccount())) {
+            assert pLevel instanceof ServerLevel;
+            ServerLevel serverLevel = (ServerLevel) pLevel;
+            if(pLevel.getBlockEntity(pPos) instanceof SellerBE buyerEntity) {
+//                AdminShop.LOGGER.debug("Looking for account: "+buyerEntity.getAccount().toString());
+                if (MoneyManager.get(serverLevel).getBankAccount(buyerEntity.getAccount())
+                        .containsMember(pPlayer.getStringUUID())) {
+//                    AdminShop.LOGGER.debug("Found account");
                     // Open menu
-                    NetworkHooks.openScreen((ServerPlayer) pPlayer, sellerEntity, pPos);
+                    NetworkHooks.openScreen((ServerPlayer) pPlayer, buyerEntity, pPos);
                 } else {
+//                    AdminShop.LOGGER.debug("Account not found");
                     // Wrong user
                     pPlayer.sendSystemMessage(Component.literal("You don't have access to this machine's account!"));
+                    AdminShop.LOGGER.info("You don't have access to this machine's account!");
                 }
 
             } else {

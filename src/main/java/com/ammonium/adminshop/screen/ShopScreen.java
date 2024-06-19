@@ -101,7 +101,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         // Get default account
         Pair<String, Integer> currentAccount = ClientConfig.getDefaultAccount();
         this.usableAccountsIndex = findUsableAccountIndex(currentAccount);
-        AdminShop.LOGGER.debug("Set default account to "+currentAccount.getKey()+":"+currentAccount.getValue());
+//        currentAccount = getAccountDetails();
+//        AdminShop.LOGGER.debug("Set default account to "+currentAccount.getKey()+":"+currentAccount.getValue());
 
         this.shopMenu = container;
         this.imageWidth = 195;
@@ -167,14 +168,14 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         super.init();
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
-        // Fetch usable accounts
-        this.usableAccounts.clear();
-        ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
-                account.getId())));
-        if (this.usableAccounts.size() < 1) {
-            AdminShop.LOGGER.error("No usable accounts found!");
-        }
-        this.usableAccountsIndex = 0;
+        // Fetch usable accounts (handled on constructor)
+//        this.usableAccounts.clear();
+//        ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
+//                account.getId())));
+//        if (this.usableAccounts.size() < 1) {
+//            AdminShop.LOGGER.error("No usable accounts found!");
+//        }
+//        this.usableAccountsIndex = 0;
         this.username = MojangAPI.getUsernameByUUID(getAccountDetails().getKey());
         rows_passed = 0;
         createShopButtons(false, relX, relY);
