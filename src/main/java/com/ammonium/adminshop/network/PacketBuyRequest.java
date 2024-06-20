@@ -111,7 +111,7 @@ public class PacketBuyRequest {
             }
 
             // Sync money with affected clients
-            AdminShop.LOGGER.info("Syncing money with clients");
+            AdminShop.LOGGER.debug("Syncing money with clients");
             // Get current bank account
             BankAccount currentAccount = moneyManager.getBankAccount(this.accOwner, this.accID);
 
@@ -119,8 +119,11 @@ public class PacketBuyRequest {
             assert currentAccount.getMembers().contains(this.accOwner);
             currentAccount.getMembers().forEach(memberUUID -> {
                 List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.getLevel()
-                        .getPlayerByUUID(UUID.fromString(memberUUID)));
+                ServerPlayer serverPlayer = (ServerPlayer) player.getLevel()
+                        .getPlayerByUUID(UUID.fromString(memberUUID));
+                if (serverPlayer == null) return;
+                AdminShop.LOGGER.debug("Syncyng money with "+serverPlayer.getName().getString());
+                Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), serverPlayer);
             });
         });
         return true;

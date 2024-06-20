@@ -1,6 +1,10 @@
 package com.ammonium.adminshop.item;
 
+import com.ammonium.adminshop.money.BankAccount;
+import com.ammonium.adminshop.money.MoneyManager;
+import com.ammonium.adminshop.network.PacketSyncMoneyToClient;
 import com.ammonium.adminshop.screen.ShopMenu;
+import com.ammonium.adminshop.setup.Messages;
 import com.ammonium.adminshop.setup.ModSetup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class ShopTablet extends LoreItem{
     public static final String SCREEN_ADMINSHOP_SHOP = "screen.adminshop.shop";
     public ShopTablet() {
@@ -28,8 +34,8 @@ public class ShopTablet extends LoreItem{
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, @NotNull Player pPlayer, @NotNull InteractionHand pUsedHand) {
-        if (!pLevel.isClientSide) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, @NotNull InteractionHand pUsedHand) {
+        if (!level.isClientSide) {
             MenuProvider containerProvider = new MenuProvider() {
                 @Override
                 public @NotNull Component getDisplayName() {
@@ -41,8 +47,12 @@ public class ShopTablet extends LoreItem{
                     return new ShopMenu(windowId, playerInventory, playerEntity);
                 }
             };
-            NetworkHooks.openScreen((ServerPlayer) pPlayer, containerProvider);
+            // Update usable accounts
+            MoneyManager moneyManager = MoneyManager.get(level);
+            List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(player.getStringUUID());
+            Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player);
+            NetworkHooks.openScreen((ServerPlayer) player, containerProvider);
         }
-        return super.use(pLevel, pPlayer, pUsedHand);
+        return super.use(level, player, pUsedHand);
     }
 }

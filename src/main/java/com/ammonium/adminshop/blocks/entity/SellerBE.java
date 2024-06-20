@@ -183,16 +183,19 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
             return;
         }
         // Sync account data
+        AdminShop.LOGGER.debug("Syncing money with clients");
         // Get current bank account
         BankAccount currentAccount = moneyManager.getBankAccount(accOwner, accID);
+
         // Sync money with bank account's members
         assert currentAccount.getMembers().contains(accOwner);
         currentAccount.getMembers().forEach(memberUUID -> {
             List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
             ServerPlayer playerByUUID = (ServerPlayer) level.getPlayerByUUID(UUID.fromString(memberUUID));
-            if (playerByUUID != null) {
-                Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), playerByUUID);
-            }
+            if (playerByUUID == null) return;
+//            AdminShop.LOGGER.debug("Syncing money with "+playerByUUID.getName().getString());
+            Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), playerByUUID);
+
         });
     }
 

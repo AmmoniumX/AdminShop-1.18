@@ -228,8 +228,11 @@ public class PacketSellRequest {
                 assert currentAccount.getMembers().contains(this.accOwner);
                 currentAccount.getMembers().forEach(memberUUID -> {
                     List<BankAccount> usableAccounts = moneyManager.getSharedAccounts().get(memberUUID);
-                    Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), (ServerPlayer) player.getLevel()
-                            .getPlayerByUUID(UUID.fromString(memberUUID)));
+                    ServerPlayer serverPlayer = (ServerPlayer) player.getLevel()
+                            .getPlayerByUUID(UUID.fromString(memberUUID));
+                    if (serverPlayer == null) return;
+                    AdminShop.LOGGER.debug("Syncyng money with "+serverPlayer.getName().getString());
+                    Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), serverPlayer);
                 });
             });
         });
