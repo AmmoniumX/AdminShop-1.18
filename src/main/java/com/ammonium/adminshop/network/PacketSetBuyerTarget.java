@@ -2,6 +2,7 @@ package com.ammonium.adminshop.network;
 
 import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.blocks.BuyerMachine;
+import com.ammonium.adminshop.money.MoneyManager;
 import com.ammonium.adminshop.shop.Shop;
 import com.ammonium.adminshop.shop.ShopItem;
 import net.minecraft.core.BlockPos;
@@ -51,11 +52,14 @@ public class PacketSetBuyerTarget {
                     return;
                 }
                 // Check machine's owner is the same as player
-                if (!buyerEntity.getOwnerUUID().equals(player.getStringUUID())) {
-                    AdminShop.LOGGER.error("Player is not the machine's owner");
+//                if (!buyerEntity.getOwnerUUID().equals(player.getStringUUID())) {
+                // Check if player has access to the machine's account
+                MoneyManager moneyManager = MoneyManager.get(player.getLevel());
+                if (!moneyManager.getBankAccount(buyerEntity.getAccount()).containsMember(player.getStringUUID())) {
+                    AdminShop.LOGGER.error("Player does not have access to this machine's account");
                     return;
                 }
-                System.out.println("Saving machine account information.");
+//                System.out.println("Saving machine account information.");
                 // Apply changes to buyerEntity
                 buyerEntity.setTargetShopItem(this.targetItem);
 //                blockEntity.setChanged();

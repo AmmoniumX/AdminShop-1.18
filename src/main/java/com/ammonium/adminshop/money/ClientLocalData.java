@@ -15,6 +15,10 @@ public class ClientLocalData {
         return usableAccounts;
     }
 
+    public static List<Pair<String, Integer>> getUsableAccountsStatic() {
+        return usableAccounts.stream().map(account -> Pair.of(account.getOwner(), account.getId())).toList();
+    }
+
     public static Map<Pair<String, Integer>, BankAccount> getAccountMap() {
         return accountMap;
     }

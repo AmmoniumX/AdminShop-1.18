@@ -1,11 +1,13 @@
 package com.ammonium.adminshop.blocks;
 
+import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.blocks.entity.Buyer2BE;
 import com.ammonium.adminshop.blocks.entity.ModBlockEntities;
 import com.ammonium.adminshop.money.MoneyManager;
 import com.ammonium.adminshop.screen.BuyerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,8 +34,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class Buyer2Block extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -65,15 +65,17 @@ public class Buyer2Block extends BaseEntityBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos,
                                  Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
+            assert pLevel instanceof ServerLevel;
+            ServerLevel serverLevel = (ServerLevel) pLevel;
             if(pLevel.getBlockEntity(pPos) instanceof Buyer2BE buyerEntity) {
-
-                if (Objects.equals(buyerEntity.getOwnerUUID(), pPlayer.getStringUUID())) {
+                if (MoneyManager.get(serverLevel).getBankAccount(buyerEntity.getAccount())
+                        .containsMember(pPlayer.getStringUUID())) {
                     // Open menu
                     NetworkHooks.openScreen((ServerPlayer) pPlayer, buyerEntity, pPos);
                 } else {
                     // Wrong user
-//                    pPlayer.sendMessage(new TextComponent("You are not this machine's owner!"), pPlayer.getUUID());
-                    pPlayer.sendSystemMessage(Component.literal("You are not this machine's owner!"));
+                    pPlayer.sendSystemMessage(Component.literal("You don't have access to this machine's account!"));
+                    AdminShop.LOGGER.info("You don't have access to this machine's account!");
                 }
 
             } else {

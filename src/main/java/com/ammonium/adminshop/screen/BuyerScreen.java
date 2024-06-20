@@ -22,6 +22,8 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -73,6 +75,7 @@ public class BuyerScreen extends AbstractContainerScreen<BuyerMenu> {
             assert player != null;
             // Check if player is the owner
             if (!player.getStringUUID().equals(ownerUUID)) {
+                player.playNotifySound(SoundEvents.UI_BUTTON_CLICK.get(), SoundSource.BLOCKS, 1.0f, 0.5f);
                 player.sendSystemMessage(Component.literal("You are not the owner of this machine!"));
                 return;
             }

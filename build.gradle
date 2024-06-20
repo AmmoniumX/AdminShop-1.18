@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 
-version = '1.19.4-1.17.3'
+version = '1.19.4-1.17.4.2'
 group = 'com.ammonium.adminshop' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'adminshop'
 
@@ -67,7 +67,7 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'adminshop'
 
-            // patchouli fix
+            // other mod mappings fix
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
@@ -88,7 +88,7 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'adminshop'
 
-            // patchouli fix
+            // other mod mappings fix
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 

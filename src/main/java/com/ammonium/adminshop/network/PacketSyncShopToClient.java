@@ -28,7 +28,7 @@ public class PacketSyncShopToClient {
             //Client side accessed here
             //Do NOT call client-only code though, since server needs to access this too
             AdminShop.LOGGER.info("Syncing shop data from Server...");
-            Shop.get().loadFromFile(shopData);
+            Shop.get().loadFromFile(shopData, ctx.getSender());
         });
         return true;
     }

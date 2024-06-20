@@ -27,10 +27,17 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = AdminShop.MODID)
 public class ServerEventListeners {
 
+    private static boolean startupCompleted = false;
+
+    public static boolean getStartupCompleted() {
+        return startupCompleted;
+    }
+
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
-        if(Shop.get().errors.size() > 0)
-            Shop.get().printErrors(event.getEntity());
+        Shop shop = Shop.get();
+        if(shop.errors.size() > 0)
+            shop.printErrors(event.getEntity());
         ServerPlayer player = (ServerPlayer) event.getEntity();
         AdminShop.LOGGER.debug("Calling SyncShop from onPlayerLogin");
         Messages.sendToPlayer(new PacketSyncShopToClient(Shop.get().shopTextRaw), player);
@@ -63,7 +70,10 @@ public class ServerEventListeners {
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         AdminShop.LOGGER.info("Loading Shop");
-        Shop.get();
+        Shop shop = Shop.get();
+        shop.printErrors(null);
+
+        startupCompleted = true;
     }
 
     @SubscribeEvent
