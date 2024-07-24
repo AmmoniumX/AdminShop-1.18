@@ -122,7 +122,6 @@ public class PacketBuyRequest {
                 ServerPlayer serverPlayer = (ServerPlayer) player.getLevel()
                         .getPlayerByUUID(UUID.fromString(memberUUID));
                 if (serverPlayer == null) return;
-                AdminShop.LOGGER.debug("Syncyng money with "+serverPlayer.getName().getString());
                 Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), serverPlayer);
             });
         });
@@ -141,7 +140,7 @@ public class PacketBuyRequest {
         mainInventoryHandler.ifPresent(iItemHandler -> {
             // item logic
             // Attempt to insert the items, and only perform transaction on what can fit
-            AdminShop.LOGGER.info("Buying Item");
+            AdminShop.LOGGER.debug("Buying Item");
             ItemStack toInsert = item.getItem().copy();
             toInsert.setCount(quantity);
             ItemStack returned = ItemHandlerHelper.insertItemStacked(iItemHandler, toInsert, true);
@@ -157,7 +156,7 @@ public class PacketBuyRequest {
                 ItemHandlerHelper.insertItemStacked(iItemHandler, toInsert, false);
             } else {
                 player.sendSystemMessage(Component.literal("Not enough money in account!"));
-                AdminShop.LOGGER.error("Not enough money in account to perform transaction.");
+                AdminShop.LOGGER.debug("Not enough money in account to perform transaction.");
             }
         });
     }
@@ -172,7 +171,7 @@ public class PacketBuyRequest {
         mainInventoryHandler.ifPresent(itemHandler -> {
             // fluid logic
             // Attempt to insert the fluid into a IFluidContainerItem, and only perform transaction on what can fit (up to 1000mb)
-            AdminShop.LOGGER.info("Buying Fluid");
+            AdminShop.LOGGER.debug("Buying Fluid");
             FluidStack toInsert = shopItem.getFluid().copy();
             toInsert.setAmount(quantity);
             int fillableContainerIdx = getFillableFluidContainer(itemHandler, toInsert.getFluid(), quantity);
@@ -187,7 +186,7 @@ public class PacketBuyRequest {
             if (ogContainer.getItem().equals(Items.BUCKET) && ogContainer.getCount() != 1) {
                 if (!hasEmptySlot(itemHandler)) {
                     player.sendSystemMessage(Component.literal("Trying to fill into a bucket, but wouldn't have space for filled bucket"));
-                    AdminShop.LOGGER.error("Trying to fill into a bucket, but wouldn't have space for filled bucket");
+                    AdminShop.LOGGER.debug("Trying to fill into a bucket, but wouldn't have space for filled bucket");
                     return;
                 }
                 // Set new container to be single item
@@ -227,7 +226,7 @@ public class PacketBuyRequest {
                     });
             } else {
                 player.sendSystemMessage(Component.literal("Not enough money in account!"));
-                AdminShop.LOGGER.error("Not enough money in account to perform transaction.");
+                AdminShop.LOGGER.debug("Not enough money in account to perform transaction.");
             }
         });
     }

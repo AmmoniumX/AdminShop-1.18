@@ -49,12 +49,12 @@ public class MojangAPI {
                 storedResults.put(uuid, name);
                 return name;
             } else {
-                AdminShop.LOGGER.error("Mojang API request failed: " + responseCode);
+                AdminShop.LOGGER.warn("Mojang API request failed: " + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        AdminShop.LOGGER.error("No name found, returning UUID");
+        AdminShop.LOGGER.info("No name found, returning UUID");
         return uuid;
     }
 }

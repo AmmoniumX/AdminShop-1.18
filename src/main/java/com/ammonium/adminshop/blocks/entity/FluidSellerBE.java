@@ -114,7 +114,7 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
     public static void sellerTransaction(BlockPos pos, ServerLevel level, FluidSellerBE sellerEntity) {
         LazyOptional<IFluidHandler> lazyFluidHandler = sellerEntity.getCapability(ForgeCapabilities.FLUID_HANDLER);
         if (!lazyFluidHandler.isPresent()) {
-            AdminShop.LOGGER.error("FluidSeller has no FluidHandler!");
+            AdminShop.LOGGER.debug("FluidSeller has no FluidHandler!");
             return;
         }
         lazyFluidHandler.ifPresent(fluidHandler -> {
@@ -160,11 +160,11 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
             }
             // Check shopItem is fluid and sell only
             if (shopItem.isBuy() || shopItem.isItem()) {
-                AdminShop.LOGGER.error("Fluid Seller shopItem is not sell fluid!");
+                AdminShop.LOGGER.debug("Fluid Seller shopItem is not sell fluid!");
                 return;
             }
             if (shopItem.getFluid().isEmpty()) {
-                AdminShop.LOGGER.error("Fluid Seller shopItem is empty!");
+                AdminShop.LOGGER.debug("Fluid Seller shopItem is empty!");
                 return;
             }
 //            AdminShop.LOGGER.debug("Found valid fluid: "+shopItem.getFluid().getDisplayName().getString());
@@ -178,12 +178,12 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
             // Get MoneyManager and attempt transaction
             // Check if account is set
             if (sellerEntity.account == null) {
-                AdminShop.LOGGER.error("Fluid Seller bankAccount is null");
+                AdminShop.LOGGER.debug("Fluid Seller bankAccount is null");
                 return;
             }
             // Check if account still exists
             if (!moneyManager.existsBankAccount(sellerEntity.account)) {
-                AdminShop.LOGGER.error("Fluid Seller machine account "+sellerEntity.account.getKey()+":"+sellerEntity.account
+                AdminShop.LOGGER.debug("Fluid Seller machine account "+sellerEntity.account.getKey()+":"+sellerEntity.account
                         .getValue()+" does not exist");
                 return;
             }
@@ -201,7 +201,7 @@ public class FluidSellerBE extends FluidHandlerBlockEntity implements ShopMachin
 //                AdminShop.LOGGER.debug("Successfully drained "+drained+"mb");
 //                AdminShop.LOGGER.debug("Tank is now "+sellerEntity.tank.getFluid().getAmount()+"mb "+sellerEntity.tank.getFluid().getDisplayName().getString());
             } else {
-                AdminShop.LOGGER.error("Error selling fluid.");
+                AdminShop.LOGGER.debug("Error selling fluid.");
                 return;
             }
             // Sync account data

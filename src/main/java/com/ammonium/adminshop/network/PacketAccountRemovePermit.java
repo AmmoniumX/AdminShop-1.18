@@ -65,7 +65,7 @@ public class PacketAccountRemovePermit {
                 AdminShop.LOGGER.error("Error removing permit from account!");
             } else {
 
-                AdminShop.LOGGER.info("Syncing money with clients");
+                AdminShop.LOGGER.debug("Syncing money with clients");
 
                 // Get current bank account
                 BankAccount currentAccount = moneyManager.getBankAccount(this.accOwner, this.accID);

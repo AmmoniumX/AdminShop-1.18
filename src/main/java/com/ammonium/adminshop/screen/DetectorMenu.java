@@ -1,6 +1,5 @@
 package com.ammonium.adminshop.screen;
 
-import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.blocks.Detector;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,7 +48,6 @@ public abstract class DetectorMenu<Q extends Detector> extends AbstractContainer
     }
     public DetectorMenu(int windowId, Inventory inv, BlockEntity entity, MenuType<?> menuType, Class<Q> pClass) {
         super(menuType, windowId);
-        AdminShop.LOGGER.debug("Creating DetectorMenu super");
         if (!pClass.isInstance(entity)) {
             throw new IllegalArgumentException("Invalid detector block entity type");
         }

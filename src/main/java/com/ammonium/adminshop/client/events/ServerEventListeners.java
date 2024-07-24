@@ -49,12 +49,12 @@ public class ServerEventListeners {
             // Create personal account if first login
             int success = moneyManager.CreateAccount(event.getEntity().getStringUUID(), 1);
             if (success == -1) {
-                AdminShop.LOGGER.error("Could not create personal account on first login!");
+                AdminShop.LOGGER.warn("Could not create personal account on first login!");
             }
         }
         usableAccounts = moneyManager.getSharedAccounts().get(event.getEntity().getStringUUID());
         if (usableAccounts == null) {
-            AdminShop.LOGGER.error("Could not get usableAccounts for player on login.");
+            AdminShop.LOGGER.warn("Could not get usableAccounts for player on login.");
             usableAccounts = new ArrayList<>();
         }
         Messages.sendToPlayer(new PacketSyncMoneyToClient(usableAccounts), player);

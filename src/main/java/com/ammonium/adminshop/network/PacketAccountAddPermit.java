@@ -73,7 +73,7 @@ public class PacketAccountAddPermit {
                 // Remove item from user
                 player.getInventory().removeItem(slotIndex, 1);
                 // Sync money with affected clients
-                AdminShop.LOGGER.info("Syncing money with clients");
+                AdminShop.LOGGER.debug("Syncing money with clients");
 
                 // Get current bank account
                 BankAccount currentAccount = moneyManager.getBankAccount(this.accOwner, this.accID);

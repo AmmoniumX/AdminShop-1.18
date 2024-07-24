@@ -58,7 +58,7 @@ public class ClientLocalData {
 
     public static BankAccount addAccount(BankAccount newAccount) {
         if (accountMap.containsKey(Pair.of(newAccount.getOwner(), newAccount.getId()))) {
-            AdminShop.LOGGER.warn("newAccount already in accountMap.");
+            AdminShop.LOGGER.info("newAccount already in accountMap.");
             return accountMap.get(Pair.of(newAccount.getOwner(), newAccount.getId()));
         }
         ClientLocalData.usableAccounts.add(newAccount);
@@ -70,8 +70,8 @@ public class ClientLocalData {
 //        if (!accountSet.contains(bankAccount)) {
         BankAccount result;
         if (!accountMap.containsKey(bankAccount)) {
-            AdminShop.LOGGER.warn("Could not find bankAccount in usableAccounts, adding it.");
-            AdminShop.LOGGER.warn("OwnerUUID:" + bankAccount.getKey() + ", accID:" + bankAccount.getValue());
+            AdminShop.LOGGER.info("Could not find bankAccount in usableAccounts, adding it.");
+            AdminShop.LOGGER.debug("OwnerUUID:" + bankAccount.getKey() + ", accID:" + bankAccount.getValue());
             result = ClientLocalData.addAccount(new BankAccount(bankAccount.getKey(), bankAccount.getValue()));
         } else {
             result = accountMap.get(bankAccount);

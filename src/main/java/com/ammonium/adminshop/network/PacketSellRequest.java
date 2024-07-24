@@ -182,7 +182,7 @@ public class PacketSellRequest {
                     }
                 }
                 if (sellBySlot && shopItem == null) {
-                    AdminShop.LOGGER.error("Could not find a valid ShopItem for the ItemStack of "+sellStack.getDisplayName().getString());
+                    AdminShop.LOGGER.debug("Could not find a valid ShopItem for the ItemStack of "+sellStack.getDisplayName().getString());
                     return;
                 }
                 
@@ -200,7 +200,7 @@ public class PacketSellRequest {
                 // Check if account has permit requirement
                 BankAccount bankAccount = moneyManager.getBankAccount(this.accOwner, this.accID);
                 if (!bankAccount.hasPermit(shopItem.getPermitTier())) {
-                    AdminShop.LOGGER.error("Account "+accOwner+":"+accID+" does not have permit tier "+ shopItem.getPermitTier());
+                    AdminShop.LOGGER.info("Account "+accOwner+":"+accID+" does not have permit tier "+ shopItem.getPermitTier());
                     player.sendSystemMessage(Component.literal( MojangAPI.getUsernameByUUID(accOwner)+":"+accID+" does not " +
                             "have permit tier "+ shopItem.getPermitTier()));
                     return;
@@ -250,14 +250,14 @@ public class PacketSellRequest {
             // Check that we are doing a valid extraction
             ItemStack toExtract = iItemHandler.getStackInSlot(slotIndex);
             if (!item.isTag() && !toExtract.getItem().equals(item.getItem().getItem())) {
-                AdminShop.LOGGER.error("Invalid extraction: non-tag item and Items don't match: "+
+                AdminShop.LOGGER.debug("Invalid extraction: non-tag item and Items don't match: "+
                         item.getItem().getDisplayName().getString()+", "+toExtract.getDisplayName().getString());
                 return;
             }
             if (item.isTag()) {
                 ITag<Item> itemTagManager = ForgeRegistries.ITEMS.tags().getTag(item.getItemTag());
                 if (!itemTagManager.contains(toExtract.getItem())) {
-                    AdminShop.LOGGER.error("Invalid extraction: item doesn't have tag: "+
+                    AdminShop.LOGGER.debug("Invalid extraction: item doesn't have tag: "+
                             toExtract.getDisplayName().getString()+", "+item.getItemTag().location());
                 }
             }
@@ -266,7 +266,7 @@ public class PacketSellRequest {
             long price = (long) numSold * itemCost;
             if (numSold == 0) {
                 player.sendSystemMessage(Component.literal("No valid item found."));
-                AdminShop.LOGGER.error("No valid item found.");
+                AdminShop.LOGGER.debug("No valid item found.");
                 return;
             }
 
@@ -274,7 +274,7 @@ public class PacketSellRequest {
             if (success) {
                 AdminShop.LOGGER.debug("Sold item.");
             } else {
-                AdminShop.LOGGER.error("Error selling item.");
+                AdminShop.LOGGER.debug("Error selling item.");
             }
         });
     }
@@ -304,12 +304,12 @@ public class PacketSellRequest {
                 toExtract = item.getItem().copy();
             }
             if (toExtract.isEmpty()) {
-                AdminShop.LOGGER.error("Could not find item tag: "+item.getItemTag().location());
+                AdminShop.LOGGER.debug("Could not find item tag: "+item.getItemTag().location());
                 return;
             }
             toExtract.setCount(quantity);
             if (!item.isTag() && !toExtract.getItem().equals(item.getItem().getItem())) {
-                AdminShop.LOGGER.error("Invalid extraction: non-tag item and Items don't match: "+
+                AdminShop.LOGGER.debug("Invalid extraction: non-tag item and Items don't match: "+
                         item.getItem().getDisplayName().getString()+", "+toExtract.getDisplayName().getString());
                 return;
             }
@@ -318,14 +318,14 @@ public class PacketSellRequest {
             long price = (long) numSold * itemCost;
             if (numSold == 0) {
                 player.sendSystemMessage(Component.literal("No matching item found."));
-                AdminShop.LOGGER.error("No matching item found.");
+                AdminShop.LOGGER.debug("No matching item found.");
                 return;
             }
             boolean success = MoneyManager.get(player.getLevel()).addBalance(accOwner, accID, price);
             if (success) {
                 AdminShop.LOGGER.debug("Sold item.");
             } else {
-                AdminShop.LOGGER.error("Error selling item.");
+                AdminShop.LOGGER.debug("Error selling item.");
             }
         });
     }
@@ -340,20 +340,20 @@ public class PacketSellRequest {
             // Check that we are doing a valid extraction
             ItemStack toExtract = itemHandler.getStackInSlot(slotIndex);
             if (!toExtract.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
-                AdminShop.LOGGER.error("Item isn't a fluid handler");
+                AdminShop.LOGGER.debug("Item isn't a fluid handler");
                 return;
             }
             toExtract.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHanlder -> {
                 FluidStack toSellFluid = fluidHanlder.getFluidInTank(0);
                 if (!item.isTag() && !toSellFluid.getFluid().equals(item.getFluid().getFluid())) {
-                    AdminShop.LOGGER.error("Invalid extraction: fluids don't match: "+
+                    AdminShop.LOGGER.debug("Invalid extraction: fluids don't match: "+
                             toSellFluid.getDisplayName().getString()+", "+item.getFluid().getDisplayName().getString());
                     return;
                 }
                 if (item.isTag()) {
                     ITag<Fluid> fluidTagManager = ForgeRegistries.FLUIDS.tags().getTag(item.getFluidTag());
                     if (!fluidTagManager.contains(toSellFluid.getFluid())) {
-                        AdminShop.LOGGER.error("Invalid extraction: fluid doesn't have tag: "+
+                        AdminShop.LOGGER.debug("Invalid extraction: fluid doesn't have tag: "+
                                 toSellFluid.getDisplayName().getString()+", "+item.getFluidTag().location());
                     }
                 }
@@ -364,7 +364,7 @@ public class PacketSellRequest {
                 long price = (long) numSold * itemCost;
                 if (numSold == 0) {
                     player.sendSystemMessage(Component.literal("No valid fluid found."));
-                    AdminShop.LOGGER.error("No valid fluid found.");
+                    AdminShop.LOGGER.debug("No valid fluid found.");
                     return;
                 }
 
@@ -375,7 +375,7 @@ public class PacketSellRequest {
                     ItemStack inserted = ItemHandlerHelper.insertItemStacked(itemHandler, returned, false);
                     if (inserted.getCount() != 0) {
                         player.sendSystemMessage(Component.literal("Error inserting fluid container, this shouldn't happen!"));
-                        AdminShop.LOGGER.error("Error inserting fluid container, this shouldn't happen! "+inserted.getCount());
+                        AdminShop.LOGGER.debug("Error inserting fluid container, this shouldn't happen! "+inserted.getCount());
                     }
                 }
 
@@ -383,7 +383,7 @@ public class PacketSellRequest {
                 if (success) {
                     AdminShop.LOGGER.debug("Sold fluid.");
                 } else {
-                    AdminShop.LOGGER.error("Error selling fluid.");
+                    AdminShop.LOGGER.debug("Error selling fluid.");
                 }
             });
         });
@@ -429,29 +429,29 @@ public class PacketSellRequest {
                 });
             }
             if (toExtract.getValue().isEmpty()) {
-                AdminShop.LOGGER.error("Could not find fluid handler item with ShopItem");
+                AdminShop.LOGGER.debug("Could not find fluid handler item with ShopItem");
                 return;
             }
             if (!toExtract.getValue().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
-                AdminShop.LOGGER.error("Item isn't a fluid handler");
+                AdminShop.LOGGER.debug("Item isn't a fluid handler");
                 return;
             }
             toExtract.getValue().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHanlder -> {
                 AdminShop.LOGGER.debug("Item is fluid handler");
                 if (fluidHanlder.getTanks() < 1) {
-                    AdminShop.LOGGER.error("Fluid handler has no tanks");
+                    AdminShop.LOGGER.debug("Fluid handler has no tanks");
                     return;
                 }
                 FluidStack toSellFluid = fluidHanlder.getFluidInTank(0);
                 if (!item.isTag() && !toSellFluid.getFluid().equals(item.getFluid().getFluid())) {
-                    AdminShop.LOGGER.error("Invalid extraction: fluids don't match: "+
+                    AdminShop.LOGGER.debug("Invalid extraction: fluids don't match: "+
                             toSellFluid.getDisplayName().getString()+", "+item.getFluid().getDisplayName().getString());
                     return;
                 }
                 if (item.isTag()) {
                     ITag<Fluid> fluidTagManager = ForgeRegistries.FLUIDS.tags().getTag(item.getFluidTag());
                     if (!fluidTagManager.contains(toSellFluid.getFluid())) {
-                        AdminShop.LOGGER.error("Invalid extraction: fluid doesn't have tag: "+
+                        AdminShop.LOGGER.debug("Invalid extraction: fluid doesn't have tag: "+
                                 toSellFluid.getDisplayName().getString()+", "+item.getFluidTag().location());
                     }
                 }
@@ -463,7 +463,7 @@ public class PacketSellRequest {
                 long price = (long) numSold * itemCost;
                 if (numSold == 0) {
                     player.sendSystemMessage(Component.literal("No valid fluid found."));
-                    AdminShop.LOGGER.error("No valid fluid found.");
+                    AdminShop.LOGGER.debug("No valid fluid found.");
                     return;
                 }
 
@@ -474,7 +474,7 @@ public class PacketSellRequest {
                     ItemStack inserted = ItemHandlerHelper.insertItemStacked(itemHandler, returned, false);
                     if (inserted.getCount() != 0) {
                         player.sendSystemMessage(Component.literal("Error inserting fluid container, this shouldn't happen!"));
-                        AdminShop.LOGGER.error("Error inserting fluid container, this shouldn't happen! "+inserted.getCount());
+                        AdminShop.LOGGER.debug("Error inserting fluid container, this shouldn't happen! "+inserted.getCount());
                     }
                 }
 
@@ -482,7 +482,7 @@ public class PacketSellRequest {
                 if (success) {
                     AdminShop.LOGGER.debug("Sold fluid.");
                 } else {
-                    AdminShop.LOGGER.error("Error selling fluid.");
+                    AdminShop.LOGGER.debug("Error selling fluid.");
                 }
             });
         });

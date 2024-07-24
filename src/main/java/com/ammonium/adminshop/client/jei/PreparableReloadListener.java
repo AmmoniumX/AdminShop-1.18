@@ -50,7 +50,7 @@ public class PreparableReloadListener extends SimplePreparableReloadListener<Str
     @Override
     protected void apply(String shopTextRaw, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         if (!ServerEventListeners.getStartupCompleted()) {
-            AdminShop.LOGGER.error("Startup hasn't completed, cancelling reload event");
+            AdminShop.LOGGER.debug("Startup hasn't completed, cancelling adminshop reload");
             return;
         }
         AdminShop.LOGGER.debug("Reloading shop...");

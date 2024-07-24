@@ -78,8 +78,7 @@ public class BuyerMenu extends AbstractContainerMenu {
     protected boolean moveItemStackTo(ItemStack pStack, int pStartIndex, int pEndIndex, boolean pReverseDirection) {
         if (pStartIndex >= TE_INVENTORY_FIRST_SLOT_INDEX && pEndIndex < TE_INVENTORY_FIRST_SLOT_INDEX
                 + TE_INVENTORY_SLOT_COUNT) {
-            AdminShop.LOGGER.error("Cannot move item stack here");
-            System.out.println("Cannot move item stack here");
+            AdminShop.LOGGER.debug("Cannot move item stack here");
             return false;
         }
         return super.moveItemStackTo(pStack, pStartIndex, pEndIndex, pReverseDirection);

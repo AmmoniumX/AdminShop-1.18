@@ -78,7 +78,7 @@ public class Buyer3Block extends BaseEntityBlock {
 //                    AdminShop.LOGGER.debug("Account not found");
                     // Wrong user
                     pPlayer.sendSystemMessage(Component.literal("You don't have access to this machine's account!"));
-                    AdminShop.LOGGER.info("You don't have access to this machine's account!");
+                    AdminShop.LOGGER.debug("You doesn't have access to this machine's account!");
                 }
 
             } else {

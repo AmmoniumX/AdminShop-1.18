@@ -123,14 +123,14 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
                 return i;
             }
         }
-        AdminShop.LOGGER.error("No account "+accOwner+":"+accId+" found in usableAccounts, fallback to personal account");
+        AdminShop.LOGGER.warn("No account "+accOwner+":"+accId+" found in usableAccounts, fallback to personal account");
 
         // Fallback to personal account
         int personalAccountIndex = this.usableAccounts.indexOf(this.personalAccount);
         if (personalAccountIndex != -1) {
             return personalAccountIndex;
         } else if (!this.usableAccounts.isEmpty()){
-            AdminShop.LOGGER.error("Personal account not found in usableAccounts, fallback to first usable account");
+            AdminShop.LOGGER.warn("Personal account not found in usableAccounts, fallback to first usable account");
             return 0;
         } else {
             AdminShop.LOGGER.error("usableAccounts is empty!");
@@ -383,7 +383,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         if (numPassed < shopItems.size()) {
             shopItems = shopItems.subList(numPassed, Math.min(numPassed+NUM_ROWS*NUM_COLS, shopItems.size()));
         } else {
-            AdminShop.LOGGER.error("Scrolled farther down that should've!");
+            AdminShop.LOGGER.debug("Scrolled farther down that should've!");
             shopItems = new ArrayList<>(); // or however you want to handle this case
         }
         // Add buttons
@@ -434,7 +434,7 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private void changeAccounts() {
         // Check if bankAccount was in usableAccountsIndex
         if (this.usableAccountsIndex == -1) {
-            AdminShop.LOGGER.error("BankAccount is not in usableAccountsIndex");
+            AdminShop.LOGGER.warn("BankAccount is not in usableAccountsIndex");
             return;
         }
         // Refresh usable accounts

@@ -1,6 +1,5 @@
 package com.ammonium.adminshop.client.gui;
 
-import com.ammonium.adminshop.AdminShop;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -71,7 +70,6 @@ public class TankGauge extends AbstractWidget {
 
     @Override
     public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
-        AdminShop.LOGGER.debug("Render Tooltip");
         super.renderToolTip(pPoseStack, pMouseX, pMouseY);
     }
 

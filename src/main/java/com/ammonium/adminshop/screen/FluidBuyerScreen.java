@@ -134,7 +134,7 @@ public class FluidBuyerScreen extends AbstractContainerScreen<FluidBuyerMenu> {
         ClientLocalData.getUsableAccounts().forEach(account -> this.usableAccounts.add(Pair.of(account.getOwner(),
                 account.getId())));
         if (this.usableAccounts.size() < 1) {
-            AdminShop.LOGGER.error("No usable accounts found!");
+            AdminShop.LOGGER.warn("No usable accounts found!");
         }
         this.usableAccountsIndex = 0;
         this.username = MojangAPI.getUsernameByUUID(getAccountDetails().getKey());

@@ -147,11 +147,11 @@ public class BuyerBE extends BlockEntity implements BuyerMachine, ItemShopMachin
         ShopItem shopItem = buyerEntity.getTargetShopItem();
         // Check shopItem is item and buy only
         if (!shopItem.isBuy() || !shopItem.isItem()) {
-            AdminShop.LOGGER.error("Buyer shopItem is not buy item!");
+            AdminShop.LOGGER.debug("Buyer shopItem is not buy item!");
             return;
         }
         if (shopItem.getItem().isEmpty()) {
-            AdminShop.LOGGER.error("Buyer shopItem is empty!");
+            AdminShop.LOGGER.debug("Buyer shopItem is empty!");
             return;
         }
 
@@ -168,13 +168,13 @@ public class BuyerBE extends BlockEntity implements BuyerMachine, ItemShopMachin
 
         // Check if account is set
         if (buyerEntity.account == null) {
-            AdminShop.LOGGER.error("Buyer bankAccount is null");
+            AdminShop.LOGGER.debug("Buyer bankAccount is null");
             return;
         }
 
         // Check if account still exists
         if (!moneyManager.existsBankAccount(buyerEntity.account)) {
-            AdminShop.LOGGER.error("Buyer machine account "+buyerEntity.account.getKey()+":"+buyerEntity.account
+            AdminShop.LOGGER.debug("Buyer machine account "+buyerEntity.account.getKey()+":"+buyerEntity.account
                     .getValue()+" does not exist");
             return;
         }
@@ -196,7 +196,7 @@ public class BuyerBE extends BlockEntity implements BuyerMachine, ItemShopMachin
         if (success) {
             ItemHandlerHelper.insertItemStacked(handler, toInsert, false);
         } else {
-            AdminShop.LOGGER.error("Error selling item.");
+            AdminShop.LOGGER.debug("Error selling item.");
             return;
         }
         // Sync account data
@@ -363,10 +363,8 @@ public class BuyerBE extends BlockEntity implements BuyerMachine, ItemShopMachin
         } else {
             Item targetItem = ForgeRegistries.ITEMS.getValue(targetResource);
             if (!this.hasNBT) {
-                AdminShop.LOGGER.info("Buyer has no NBT");
                 this.targetShopItem = Shop.get().getBuyShopItem(targetItem);
             } else if (tag.contains("indexTargetNBT")){
-                AdminShop.LOGGER.info("Buyer has NBT");
                 int indexTargetNBT = tag.getInt("indexTargetNBT");
                 this.targetShopItem = Shop.get().getShopStockBuyNBT().get(targetItem).get(indexTargetNBT);
             } else {

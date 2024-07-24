@@ -251,7 +251,7 @@ public class MoneyManager extends SavedData {
      */
     public boolean existsBankAccount(String owner, int id) {
         if (!sortedAccountMap.containsKey(owner)) {
-            AdminShop.LOGGER.info("Could not find account map for owner "+owner);
+            AdminShop.LOGGER.warn("Could not find account map for owner "+owner);
             return false;
         } else if (!sortedAccountMap.get(owner).containsKey(id)) {
             AdminShop.LOGGER.info("Could not find account id "+id+" for "+owner);
@@ -381,7 +381,6 @@ public class MoneyManager extends SavedData {
      */
     @Deprecated
     public long getBalance(String player){
-        AdminShop.LOGGER.warn("getBalance(String player) is deprecated.");
         return  getBankAccount(player, 1).getBalance();
     }
 
@@ -441,7 +440,7 @@ public class MoneyManager extends SavedData {
             sharedAccounts.clear();
             ledger.forEach((accountTag) -> {
                 BankAccount bankAccount = BankAccount.deserializeTag((CompoundTag) accountTag);
-                AdminShop.LOGGER.info("Read "+bankAccount.getOwner()+":"+bankAccount.getId());
+                AdminShop.LOGGER.debug("Read "+bankAccount.getOwner()+":"+bankAccount.getId());
                 accountSet.add(bankAccount);
 
                 // add to sorted accounts maps
@@ -482,7 +481,7 @@ public class MoneyManager extends SavedData {
         AdminShop.LOGGER.info("Saving MoneyManager...");
         ListTag defaultsLedger = new ListTag();
         defaultAccounts.forEach((player, account) -> {
-            AdminShop.LOGGER.info("Saving default account "+player+" -> "+account.getKey()+":"+account.getValue());
+            AdminShop.LOGGER.debug("Saving default account "+player+" -> "+account.getKey()+":"+account.getValue());
             CompoundTag defaultTag = new CompoundTag();
             defaultTag.putString("player", player);
             defaultTag.putString("accOwner", account.getKey());
@@ -494,7 +493,7 @@ public class MoneyManager extends SavedData {
         ListTag ledger = new ListTag();
 
         accountSet.forEach(account -> {
-            AdminShop.LOGGER.info("Saving "+account.getOwner()+":"+account.getId());
+            AdminShop.LOGGER.debug("Saving "+account.getOwner()+":"+account.getId());
             CompoundTag bankAccountTag = account.serializeTag();
             ledger.add(bankAccountTag);
         });

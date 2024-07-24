@@ -147,7 +147,7 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
             isShopItem = searchTag.isPresent();
         }
         if (!isShopItem) {
-            AdminShop.LOGGER.error("Item is not in shop sell map: "+toSell.getDisplayName().getString());
+            AdminShop.LOGGER.debug("Item is not in shop sell map: "+toSell.getDisplayName().getString());
             return;
         }
         itemHandler.extractItem(0, count, false);
@@ -161,12 +161,12 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
 
         // Check if account is set
         if (sellerEntity.account == null) {
-            AdminShop.LOGGER.error("Seller bankAccount is null");
+            AdminShop.LOGGER.debug("Seller bankAccount is null");
             return;
         }
         // Check if account still exists
         if (!moneyManager.existsBankAccount(sellerEntity.account)) {
-            AdminShop.LOGGER.error("Seller machine account "+sellerEntity.account.getKey()+":"+sellerEntity.account
+            AdminShop.LOGGER.debug("Seller machine account "+sellerEntity.account.getKey()+":"+sellerEntity.account
                     .getValue()+" does not exist");
             return;
         }
@@ -174,12 +174,12 @@ public class SellerBE extends BlockEntity implements ItemShopMachine {
         int accID = sellerEntity.account.getValue();
         // Check if account has necessary trade permit
         if (!moneyManager.getBankAccount(accOwner, accID).hasPermit(shopItem.getPermitTier())) {
-            AdminShop.LOGGER.warn("Seller machine account does not have necessary trade permit");
+            AdminShop.LOGGER.debug("Seller machine account does not have necessary trade permit");
             return;
         }
         boolean success = moneyManager.addBalance(accOwner, accID, price);
         if (!success) {
-            AdminShop.LOGGER.error("Error selling item.");
+            AdminShop.LOGGER.debug("Error selling item.");
             return;
         }
         // Sync account data

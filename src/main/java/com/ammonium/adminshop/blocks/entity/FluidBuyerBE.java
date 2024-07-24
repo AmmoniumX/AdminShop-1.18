@@ -131,11 +131,11 @@ public class FluidBuyerBE extends FluidHandlerBlockEntity implements BuyerMachin
         ShopItem shopItem = buyerEntity.getTargetShopItem();
         // Check shopItem is fluid and buy only
         if (!shopItem.isBuy() || shopItem.isItem()) {
-            AdminShop.LOGGER.error("Fluid Buyer shopItem is not buy fluid!");
+            AdminShop.LOGGER.debug("Fluid Buyer shopItem is not buy fluid!");
             return;
         }
         if (shopItem.getFluid().isEmpty()) {
-            AdminShop.LOGGER.error("Fluid Buyer shopItem is empty!");
+            AdminShop.LOGGER.debug("Fluid Buyer shopItem is empty!");
             return;
         }
 
@@ -143,7 +143,7 @@ public class FluidBuyerBE extends FluidHandlerBlockEntity implements BuyerMachin
         toInsert.setAmount(buySize);
         LazyOptional<IFluidHandler> lazyFluidHandler = buyerEntity.getCapability(ForgeCapabilities.FLUID_HANDLER);
         if (!lazyFluidHandler.isPresent()) {
-            AdminShop.LOGGER.error("FluidBuyer has no FluidHandler!");
+            AdminShop.LOGGER.debug("FluidBuyer has no FluidHandler!");
             return;
         }
         lazyFluidHandler.ifPresent(fluidHandler -> {
@@ -157,20 +157,20 @@ public class FluidBuyerBE extends FluidHandlerBlockEntity implements BuyerMachin
 
             // Check if account is set
             if (buyerEntity.account == null) {
-                AdminShop.LOGGER.error("Fluid Buyer bankAccount is null");
+                AdminShop.LOGGER.debug("Fluid Buyer bankAccount is null");
                 return;
             }
 
             // Check if account still exists
             if (!moneyManager.existsBankAccount(buyerEntity.account)) {
-                AdminShop.LOGGER.error("Fluid Buyer machine account "+buyerEntity.account.getKey()+":"+buyerEntity.account
+                AdminShop.LOGGER.debug("Fluid Buyer machine account "+buyerEntity.account.getKey()+":"+buyerEntity.account
                         .getValue()+" does not exist");
                 return;
             }
 
             // Check if has permit
             if (!moneyManager.getBankAccount(buyerEntity.account).hasPermit(shopItem.getPermitTier())) {
-                AdminShop.LOGGER.error("Fluid buyer does not have permit tier "+shopItem.getPermitTier()+" for fluid "
+                AdminShop.LOGGER.debug("Fluid buyer does not have permit tier "+shopItem.getPermitTier()+" for fluid "
                         +shopItem.getFluid().getDisplayName()+"!");
                 return;
             }
@@ -196,7 +196,7 @@ public class FluidBuyerBE extends FluidHandlerBlockEntity implements BuyerMachin
 //                AdminShop.LOGGER.debug("Successfully filled "+filled+"mb");
 //                AdminShop.LOGGER.debug("Tank is now "+buyerEntity.tank.getFluid().getAmount()+"mb "+buyerEntity.tank.getFluid().getDisplayName().getString());
             } else {
-                AdminShop.LOGGER.error("Error buying fluid.");
+                AdminShop.LOGGER.debug("Error buying fluid.");
                 return;
             }
             // Sync account data
