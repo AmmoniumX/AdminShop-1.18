@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -110,9 +109,11 @@ public class ShopButton extends Button {
     public List<Component> getTooltipContent(){
         long price = item.getPrice() * getQuantity();
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(Component.literal(I18n.get("gui.money_message")+(Screen.hasAltDown() ? MoneyFormat.forcedFormat(price, MoneyFormat.FormatType.RAW) :
-                MoneyFormat.forcedFormat(price, MoneyFormat.FormatType.SHORT))+
-                " "+getQuantity()+((item.isItem()) ? "x " : "mb ")+item));
+        String priceFormatted = Screen.hasAltDown() ? MoneyFormat.forcedFormat(price, MoneyFormat.FormatType.RAW) :
+                MoneyFormat.forcedFormat(price, MoneyFormat.FormatType.SHORT);
+        String description = priceFormatted+
+                " "+getQuantity()+((item.isItem()) ? "x " : "mb ")+item;
+        tooltip.add(Component.literal(description));
         if (item.getPermitTier() != 0) {
             tooltip.add(Component.literal("Requires Permit Tier: "+item.getPermitTier()));
         }

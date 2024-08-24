@@ -14,7 +14,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +59,8 @@ public class ShopSellCategory implements IRecipeCategory<ShopSellWrapper>{
         int tierY = 80;
 
         // Draw the price
-        String priceText = "Sell Price: "+ I18n.get("gui.money_message") + MoneyFormat.format(recipe.getPrice(), MoneyFormat.FormatType.SHORT);
+        String priceFormatted = MoneyFormat.format(recipe.getPrice(), MoneyFormat.FormatType.SHORT);
+        String priceText = "Sell Price: "+ priceFormatted;
         Minecraft.getInstance().font.draw(stack, priceText, priceX, priceY, 0xFF555555);
 
         // Draw the required tier

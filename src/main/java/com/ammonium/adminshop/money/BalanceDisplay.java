@@ -5,7 +5,7 @@ import com.ammonium.adminshop.setup.ClientConfig;
 import com.ammonium.adminshop.setup.Config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -52,7 +52,8 @@ public class BalanceDisplay {
         long avg = history[0] + history[1];
         String str = MoneyFormat.cfgformat(balance);
         if (avg != 0) str += " " + (avg > 0 ? (ChatFormatting.GREEN + "+") : (ChatFormatting.RED)) + MoneyFormat.format(avg, MoneyFormat.FormatType.SHORT, MoneyFormat.FormatType.RAW) + "/s";
-        event.getLeft().add(String.format("Balance: " + I18n.get("gui.money_message") + "%s", str));
+        event.getLeft().add(Component.translatable("gui.balance", str).getString());
+
     }
 
 }

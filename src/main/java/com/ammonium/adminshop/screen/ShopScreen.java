@@ -50,7 +50,6 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
     private final ResourceLocation GUI = new ResourceLocation(AdminShop.MODID, "textures/gui/shop_gui.png");
     private final String GUI_BUY = "gui.buy";
     private final String GUI_SELL = "gui.sell";
-    private final String GUI_MONEY = "gui.money_message";
     private final String playerUUID;
     private static final int NUM_ROWS = 4, NUM_COLS = 9;
     private static final int SHOP_BUTTON_X = 16;
@@ -246,8 +245,8 @@ public class ShopScreen extends AbstractContainerScreen<ShopMenu> {
         String formatted = Screen.hasAltDown() ? MoneyFormat.forcedFormat(money, MoneyFormat.FormatType.RAW) :
                 MoneyFormat.forcedFormat(money, MoneyFormat.FormatType.SHORT);
         drawString(matrixStack, Minecraft.getInstance().font,
-                I18n.get(GUI_MONEY) + formatted,
-                getXSize() - font.width(I18n.get(GUI_MONEY) + formatted) - 6,
+                formatted,
+                getXSize() - font.width(formatted) - 6,
                 6, 0xffffff);
 
         // Bank account

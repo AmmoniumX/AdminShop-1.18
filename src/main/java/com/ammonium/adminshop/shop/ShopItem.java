@@ -200,7 +200,10 @@ public class ShopItem {
      */
     public String toString(){
         if(isItem && !isTag)    //Item
-            return item.getDisplayName().getString();
+            // Remove square brackets from item name
+            return ((item.getDisplayName().getString().startsWith("[") && item.getDisplayName().getString().endsWith("]")) ?
+                    item.getDisplayName().getString().substring(1, item.getDisplayName().getString().length()-1) :
+                    item.getDisplayName().getString());
         else if(isItem)         //Item Tag
             return I18n.get("gui.item_tag") + itemTag.location();
         else if(!isTag)         //Fluid

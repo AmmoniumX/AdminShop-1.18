@@ -2,10 +2,9 @@ package com.ammonium.adminshop.money;
 
 import com.ammonium.adminshop.setup.Config;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
 
 import javax.annotation.Nullable;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -26,10 +25,10 @@ public class MoneyFormat {
 
     // Format value based on config
     public static String cfgformat(long value) {
+//        AdminShop.LOGGER.debug("Formatting {} with config", value);
         boolean displayFormat = (Config.displayFormat.get() != null) ? Config.displayFormat.get() : true;
         FormatType formattype = displayFormat ? FormatType.SHORT : FormatType.FULL;
         return format(value, formattype, FormatType.RAW);
-//        return format(value, FormatType.SHORT);
     }
 
     // Format is always X irrespective of shift
@@ -43,23 +42,50 @@ public class MoneyFormat {
     }
 
     public static String format(long value, FormatType noShift, FormatType onShift) {
-        NumberName name = NumberName.findName(value);
-        if(name == null || Math.abs(value) < FORMAT_START) return NumberFormat.getNumberInstance(Locale.US).format(value);
-        return Screen.hasShiftDown() ? doFormat(value, name, onShift) : doFormat(value, name, noShift);
+//        AdminShop.LOGGER.debug("Formatting {} with noShift: {} and onShift: {}", value, noShift, onShift);
+
+        int decimalOffset = Integer.parseInt(I18n.get("gui.money_decimal_offset"));
+
+        double realValue = value;
+        if (decimalOffset > 0 && !Config.ignoreDecimalOffset.get()) {
+            realValue /= Math.pow(10, decimalOffset);
+
+            // Round to the specified number of decimal places
+            double scale = Math.pow(10, decimalOffset);
+            realValue = Math.round(realValue * scale) / scale;
+        }
+
+        NumberName name = NumberName.findName(realValue);
+        String moneyStr;
+        if (name == null || Math.abs(realValue) < FORMAT_START) {
+            moneyStr = NumberFormat.getNumberInstance(Locale.US).format(realValue);
+        } else {
+            moneyStr = Screen.hasShiftDown() ? doFormat(realValue, name, onShift) : doFormat(realValue, name, noShift);
+        }
+
+        return I18n.get("gui.money_format", moneyStr);
     }
 
     public static String doFormat(long value, NumberName name, FormatType formattype) {
-//        AdminShop.LOGGER.debug("Doing format "+value+", "+name+", "+formattype);
         if (formattype == FormatType.SHORT) {
-//            AdminShop.LOGGER.debug("Short Format: "+getShort(value)+" "+name.getName(true));
             return getShort(value) + name.getName(true);
         }
         else if (formattype == FormatType.FULL) {
-//            AdminShop.LOGGER.debug("Full Format: "+getShort(value)+" "+name.getName(false));
             return getShort(value) + String.format(" %s", name.getName(false));
         }
         else {
-//            AdminShop.LOGGER.debug("Number Format: "+NumberFormat.getNumberInstance(Locale.US).format(value));
+            return NumberFormat.getNumberInstance(Locale.US).format(value);
+        }
+    }
+
+    public static String doFormat(double value, NumberName name, FormatType formattype) {
+        if (formattype == FormatType.SHORT) {
+            return getShort(value) + name.getName(true);
+        }
+        else if (formattype == FormatType.FULL) {
+            return getShort(value) + String.format(" %s", name.getName(false));
+        }
+        else {
             return NumberFormat.getNumberInstance(Locale.US).format(value);
         }
     }
@@ -78,6 +104,18 @@ public class MoneyFormat {
 
         String result = String.format("%s.%s", sig, dec);
         return isNegative ? "-" + result : result;
+    }
+
+    public static String getShort(double value) {
+        boolean isNegative = value < 0;
+        String str = String.valueOf(Math.abs(value));
+        int len = str.length();
+
+        if (len <= 5) {
+            return isNegative ? "-" + str : str;
+        }
+
+        return getShort((long) value);
     }
 
 
@@ -123,6 +161,10 @@ public class MoneyFormat {
         public double getValue() {return value;}
 
         static @Nullable NumberName findName(long value) {
+            return Arrays.stream(VALUES).filter(v -> Math.abs(value) >= v.getValue()).reduce((first, second) -> second).orElse(null);
+        }
+
+        static @Nullable NumberName findName(double value) {
             return Arrays.stream(VALUES).filter(v -> Math.abs(value) >= v.getValue()).reduce((first, second) -> second).orElse(null);
         }
 

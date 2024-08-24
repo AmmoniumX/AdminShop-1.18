@@ -9,6 +9,7 @@ public class Config {
     public static ForgeConfigSpec.LongValue STARTING_MONEY;
     public static ForgeConfigSpec.BooleanValue balanceDisplay;
     public static ForgeConfigSpec.BooleanValue displayFormat;
+    public static ForgeConfigSpec.BooleanValue ignoreDecimalOffset;
 
     public static void register(){
         ForgeConfigSpec.Builder serverConfig = new ForgeConfigSpec.Builder();
@@ -39,6 +40,10 @@ public class Config {
         displayFormat = config
                 .comment("If monetary values should be formatted as M/B/T/etc (Short) instead of Million/Billion/Trillion/etc (Full)")
                 .define("Short mode ", true );
+
+        ignoreDecimalOffset = config
+                .comment("Ignore decimal offset specified in language file. This will show all money values as whole numbers.")
+                .define("Ignore decimal offset", false);
         config.pop();
     }
 
