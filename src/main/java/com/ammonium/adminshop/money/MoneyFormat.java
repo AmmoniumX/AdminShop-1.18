@@ -1,17 +1,19 @@
 package com.ammonium.adminshop.money;
 
+import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.setup.Config;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 
 import javax.annotation.Nullable;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
 public class MoneyFormat {
     public static final double FORMAT_START = 1000000;
-//    private final DecimalFormat decimalFormat = new DecimalFormat("#,###");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
 
     public enum FormatType {
         FULL,
@@ -20,7 +22,6 @@ public class MoneyFormat {
     }
 
     private MoneyFormat() {
-//        decimalFormat.setRoundingMode(RoundingMode.DOWN);
     }
 
     // Format value based on config
@@ -43,7 +44,6 @@ public class MoneyFormat {
 
     public static String format(long value, FormatType noShift, FormatType onShift) {
 //        AdminShop.LOGGER.debug("Formatting {} with noShift: {} and onShift: {}", value, noShift, onShift);
-
         int decimalOffset = Integer.parseInt(I18n.get("gui.money_decimal_offset"));
 
         double realValue = value;
@@ -58,9 +58,13 @@ public class MoneyFormat {
         NumberName name = NumberName.findName(realValue);
         String moneyStr;
         if (name == null || Math.abs(realValue) < FORMAT_START) {
-            moneyStr = NumberFormat.getNumberInstance(Locale.US).format(realValue);
+            DECIMAL_FORMAT.setMinimumFractionDigits(decimalOffset);
+            DECIMAL_FORMAT.setMaximumFractionDigits(decimalOffset);
+            moneyStr = DECIMAL_FORMAT.format(realValue);
         } else {
-            moneyStr = Screen.hasShiftDown() ? doFormat(realValue, name, onShift) : doFormat(realValue, name, noShift);
+            moneyStr = Screen.hasShiftDown() ?
+                    doFormat(realValue, name, onShift, decimalOffset) :
+                    doFormat(realValue, name, noShift, decimalOffset);
         }
 
         return I18n.get("gui.money_format", moneyStr);
@@ -74,23 +78,26 @@ public class MoneyFormat {
             return getShort(value) + String.format(" %s", name.getName(false));
         }
         else {
-            return NumberFormat.getNumberInstance(Locale.US).format(value);
+            return DECIMAL_FORMAT.format(value);
         }
     }
 
-    public static String doFormat(double value, NumberName name, FormatType formattype) {
+    public static String doFormat(double value, NumberName name, FormatType formattype, int decimalOffset) {
         if (formattype == FormatType.SHORT) {
-            return getShort(value) + name.getName(true);
+            return getShort(value, decimalOffset) + name.getName(true);
         }
         else if (formattype == FormatType.FULL) {
-            return getShort(value) + String.format(" %s", name.getName(false));
+            return getShort(value, decimalOffset) + String.format(" %s", name.getName(false));
         }
         else {
-            return NumberFormat.getNumberInstance(Locale.US).format(value);
+            DECIMAL_FORMAT.setMinimumFractionDigits(decimalOffset);
+            DECIMAL_FORMAT.setMaximumFractionDigits(decimalOffset);
+            return DECIMAL_FORMAT.format(value);
         }
     }
 
     public static String getShort(long value) {
+//        AdminShop.LOGGER.debug("Getting short for long {}", value);
         boolean isNegative = value < 0;
         String str = String.valueOf(Math.abs(value));
         int len = str.length();
@@ -106,15 +113,22 @@ public class MoneyFormat {
         return isNegative ? "-" + result : result;
     }
 
-    public static String getShort(double value) {
+    public static String getShort(double value, int decimalOffset) {
+//        AdminShop.LOGGER.debug("Getting short for double {}", value);
         boolean isNegative = value < 0;
-        String str = String.valueOf(Math.abs(value));
+//        String str = String.valueOf(Math.abs(value));
+        // Use DecimalFormat to format the number without scientific notation
+        DECIMAL_FORMAT.setMinimumFractionDigits(decimalOffset);
+        DECIMAL_FORMAT.setMaximumFractionDigits(decimalOffset);
+        String str = DECIMAL_FORMAT.format(Math.abs(value));
         int len = str.length();
 
-        if (len <= 5) {
+        if (len <= Math.max(5, 2+decimalOffset)) {
+//            AdminShop.LOGGER.debug("Length is less than 5, returning {}", str);
             return isNegative ? "-" + str : str;
         }
 
+//        AdminShop.LOGGER.debug("Length is greater than 5, returning {}", getShort((long) value));
         return getShort((long) value);
     }
 
