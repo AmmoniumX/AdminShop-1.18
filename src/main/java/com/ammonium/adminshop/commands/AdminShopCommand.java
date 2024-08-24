@@ -152,7 +152,13 @@ public class AdminShopCommand {
 
         // Search for account
         if (!moneyManager.existsBankAccount(playerUUID, id)) {
-            source.sendFailure(Component.literal("Account "+player.getName().getString()+":"+id+" does not exist!"));
+            source.sendFailure(Component.literal("Account "+player.getName().getString()+":"+id+" does not exist"));
+            return 0;
+        }
+
+        // Check if player has enough money
+        if (moneyManager.getBalance(playerUUID, id) < amount) {
+            source.sendFailure(Component.literal("Not enough money in account"));
             return 0;
         }
 
