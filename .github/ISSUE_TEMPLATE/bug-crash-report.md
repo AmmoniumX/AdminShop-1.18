@@ -23,6 +23,9 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Shop File**
+If relevant, please include an example `shop.csv` where the described issue happens.
+
 **Minecraft Version:**
 **Mod Version:**
 
