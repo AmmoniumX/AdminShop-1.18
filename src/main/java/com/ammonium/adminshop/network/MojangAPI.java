@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -51,8 +53,12 @@ public class MojangAPI {
             } else {
                 AdminShop.LOGGER.warn("Mojang API request failed: " + responseCode);
             }
+        }
+        catch (IOException e) {
+            AdminShop.LOGGER.warn("Network exception while getting username. Using UUID for the remainder of the session.");
+            storedResults.put(uuid, uuid);
         } catch (Exception e) {
-            e.printStackTrace();
+            AdminShop.LOGGER.error("Unhandled exception while getting username: " + e);
         }
         AdminShop.LOGGER.info("No name found, returning UUID");
         return uuid;
