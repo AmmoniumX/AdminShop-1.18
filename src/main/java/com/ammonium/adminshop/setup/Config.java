@@ -10,6 +10,7 @@ public class Config {
     public static ForgeConfigSpec.BooleanValue balanceDisplay;
     public static ForgeConfigSpec.BooleanValue displayFormat;
     public static ForgeConfigSpec.BooleanValue ignoreDecimalOffset;
+    public static ForgeConfigSpec.IntValue balanceDelta;
 
     public static void register(){
         ForgeConfigSpec.Builder serverConfig = new ForgeConfigSpec.Builder();
@@ -44,6 +45,11 @@ public class Config {
         ignoreDecimalOffset = config
                 .comment("Ignore decimal offset specified in language file. This will show all money values as whole numbers.")
                 .define("Ignore decimal offset", false);
+
+        balanceDelta = config
+                .comment("Number of *seconds* sampled for showing average balance/second change. Smaller values may display more erratic values.")
+                .defineInRange("Balance Delta", 5, 1, Integer.MAX_VALUE);
+
         config.pop();
     }
 
