@@ -72,12 +72,12 @@ public class BalanceDisplay {
     @SubscribeEvent
     public static void onRenderGUI(CustomizeGuiOverlayEvent.DebugText event) {
         if (!shouldRun()) return;
-        long change = history[1] - history[0];
+        long changePerSecond = (history[1] - history[0]) / BALANCE_DELTA_SECONDS;
         String str = MoneyFormat.cfgformat(balance);
-        if (change != 0) {
+        if (changePerSecond != 0) {
             String changeStr = " "
-                    + (change > 0 ? (ChatFormatting.GREEN + "+") : (ChatFormatting.RED))
-                    + MoneyFormat.format(change, MoneyFormat.FormatType.SHORT, MoneyFormat.FormatType.RAW)
+                    + (changePerSecond > 0 ? (ChatFormatting.GREEN + "+") : (ChatFormatting.RED))
+                    + MoneyFormat.format(changePerSecond, MoneyFormat.FormatType.SHORT, MoneyFormat.FormatType.RAW)
                     + "/s";
             str += changeStr;
         }
