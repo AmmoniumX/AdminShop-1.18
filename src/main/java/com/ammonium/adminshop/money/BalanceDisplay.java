@@ -1,5 +1,4 @@
 package com.ammonium.adminshop.money;
-
 import com.ammonium.adminshop.AdminShop;
 import com.ammonium.adminshop.setup.ClientConfig;
 import com.ammonium.adminshop.setup.Config;
@@ -21,6 +20,8 @@ public class BalanceDisplay {
     private static long balance = 0;
     private static final long[] history = new long[]{0, 0};
     private static int tick = 0;
+    private static int displayTick = 0;
+    private static String displayString = "";
     private static boolean BALANCE_DISPLAY = false;
     private static int BALANCE_DELTA_SECONDS = -1;
     private static int BALANCE_DELTA_TICKS = -1;
@@ -32,12 +33,28 @@ public class BalanceDisplay {
     }
 
     private static boolean shouldRun() {
-        return BALANCE_DISPLAY && (BALANCE_DELTA_SECONDS > 0) && (BALANCE_DELTA_TICKS > 0);
+        return BALANCE_DISPLAY && (BALANCE_DELTA_SECONDS > 0);
     }
 
     private static void reset() {
         history[0] = history[1] = 0;
         tick = 0;
+        displayTick = 0;
+        displayString = "";
+    }
+
+    private static void updateDisplayString() {
+        long changePerSecond = (history[1] - history[0]) / BALANCE_DELTA_SECONDS;
+        StringBuilder str = new StringBuilder(MoneyFormat.cfgformat(balance));
+
+        if (changePerSecond != 0) {
+            str.append(" ")
+                    .append(changePerSecond > 0 ? ChatFormatting.GREEN + "+" : ChatFormatting.RED)
+                    .append(MoneyFormat.format(changePerSecond, MoneyFormat.FormatType.SHORT, MoneyFormat.FormatType.RAW))
+                    .append("/s");
+        }
+
+        displayString = Component.translatable("gui.balance", str.toString()).getString();
     }
 
     @Mod.EventBusSubscriber(modid = AdminShop.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -53,15 +70,24 @@ public class BalanceDisplay {
     @SubscribeEvent
     public static void onTick(TickEvent.ClientTickEvent event) {
         if (!shouldRun()) return;
-
+        if (event.phase != TickEvent.Phase.END) return;
         if (Minecraft.getInstance().player == null) return;
-        tick++;
-        if (event.phase == TickEvent.Phase.END && tick >= BALANCE_DELTA_TICKS) {
-            tick = 0;
+
+        // Update display string every second (20 ticks)
+        if (displayTick <= 0) {
+            displayTick = 20;
+            updateDisplayString();
+        }
+        displayTick--;
+
+        // Update balance history at configured interval
+        if (tick <= 0) {
+            tick = BALANCE_DELTA_TICKS;
             balance = ClientLocalData.getMoney(ClientConfig.getDefaultAccount());
             history[0] = history[1];
             history[1] = balance;
         }
+        tick--;
     }
 
     @SubscribeEvent
@@ -72,16 +98,6 @@ public class BalanceDisplay {
     @SubscribeEvent
     public static void onRenderGUI(CustomizeGuiOverlayEvent.DebugText event) {
         if (!shouldRun()) return;
-        long changePerSecond = (history[1] - history[0]) / BALANCE_DELTA_SECONDS;
-        String str = MoneyFormat.cfgformat(balance);
-        if (changePerSecond != 0) {
-            String changeStr = " "
-                    + (changePerSecond > 0 ? (ChatFormatting.GREEN + "+") : (ChatFormatting.RED))
-                    + MoneyFormat.format(changePerSecond, MoneyFormat.FormatType.SHORT, MoneyFormat.FormatType.RAW)
-                    + "/s";
-            str += changeStr;
-        }
-        event.getLeft().add(Component.translatable("gui.balance", str).getString());
+        event.getLeft().add(displayString);
     }
-
 }
